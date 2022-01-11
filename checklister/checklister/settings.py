@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'checklist.app.ChecklistConfig'
+    # 'checklist.app.ChecklistConfig'
+    'checklist'
 ]
 
 MIDDLEWARE = [
