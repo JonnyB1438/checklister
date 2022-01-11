@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 
+
 # Create your models here.
 class Directory(models.Model):
     """
@@ -8,12 +9,15 @@ class Directory(models.Model):
         - parent is a parent directory id
         - owner is an user id from AUTH_USER_MODEL
     """
-    name = models.CharField(max_length=255,)
-    parent = models.IntegerField(blank=True,)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,)
+    name = models.CharField(max_length=255, verbose_name='Directory name')
+    parent = models.IntegerField(blank=True, null=True, verbose_name='Parent directory')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='User')
 
     class Meta:
         ordering = ['owner', 'parent', 'name']
+        verbose_name = 'Directory'
+        verbose_name_plural = 'Directories'
+
 
 class CheckListTemplate(models.Model):
     """
@@ -21,9 +25,11 @@ class CheckListTemplate(models.Model):
         - list is a checklist JSON dump
         - directory is a directory id from Directory model
     """
-    name = models.CharField(max_length=255,)
-    list = models.TextField(blank=True,)
-    directory = models.ForeignKey('Directory', on_delete=models.CASCADE,)
+    name = models.CharField(max_length=255, verbose_name='Name')
+    list = models.TextField(blank=True, verbose_name='Checklist')
+    directory = models.ForeignKey('Directory', on_delete=models.CASCADE, verbose_name='Parent directory')
 
     class Meta:
-        ordering = ['directory', 'name',]
+        ordering = ['directory', 'name', ]
+        verbose_name = 'CheckList Template'
+        verbose_name_plural = 'CheckList Templates'
