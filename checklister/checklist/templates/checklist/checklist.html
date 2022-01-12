@@ -1,0 +1,15 @@
+{% extends 'checklist/base.html' %}
+
+{% block title %}My checklist{% endblock %}
+
+{% block content %}
+    {% if list_directories %}
+        <ul>
+            {% for directory in list_directories %}
+                <li>{{ directory.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>User undefined!</h2>
+    {% endif %}
+{% endblock %}

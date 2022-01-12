@@ -18,7 +18,6 @@ class CheckListTemplateAdmin(admin.ModelAdmin):
     list_filter = ('directory',)
 
 
-
 # Register your models here.
 admin.site.register(Directory,DirectoryAdmin)
 admin.site.register(CheckListTemplate, CheckListTemplateAdmin)
