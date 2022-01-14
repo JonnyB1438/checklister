@@ -10,7 +10,7 @@ class Directory(models.Model):
         - owner is an user id from AUTH_USER_MODEL
     """
     name = models.CharField(max_length=255, verbose_name='Directory name')
-    parent = models.IntegerField(blank=True, null=True, verbose_name='Parent directory')
+    parent = models.IntegerField(default=0, verbose_name='Parent directory')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='User')
 
     class Meta:
