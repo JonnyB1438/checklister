@@ -46,10 +46,31 @@ $(document).ready(function () {
                     current_directory_id: $("#parent_dir").attr('value'),
                     new_directory_name: dir_name,
                     csrfmiddlewaretoken: csrf,
-            },
-            success: load_json_data,
-            error: function(response) {location.reload();},
-        });
+                },
+                success: load_json_data,
+                error: function(response) {location.reload();},
+            });
+        };
+    });
+
+    $(document).on("click", "#add_checklist", function(){
+        console.log('Click adding checklist!');
+        var checklist_name = $("#checklist_name").val();
+        console.log(checklist_name);
+        console.log(csrf);
+        if (checklist_name) {
+            $("#checklist_name").val("");
+            $.ajax({
+                url: '',
+                type: 'post',
+                data: {
+                    current_directory_id: $("#parent_dir").attr('value'),
+                    new_checklist_name: checklist_name,
+                    csrfmiddlewaretoken: csrf,
+                },
+                success: load_json_data,
+                error: function(response) {location.reload();},
+            });
         };
     });
 

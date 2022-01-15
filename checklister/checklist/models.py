@@ -26,7 +26,7 @@ class CheckListTemplate(models.Model):
         - directory is a directory id from Directory model
     """
     name = models.CharField(max_length=255, verbose_name='Name')
-    list = models.TextField(blank=True, verbose_name='Checklist')
+    list = models.TextField(default='', verbose_name='Checklist')
     directory = models.ForeignKey('Directory', on_delete=models.CASCADE, verbose_name='Parent directory')
 
     class Meta:

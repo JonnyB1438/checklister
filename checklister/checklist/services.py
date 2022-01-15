@@ -2,7 +2,7 @@ from pprint import pprint
 
 from django.shortcuts import redirect
 
-from .models import Directory
+from .models import Directory, CheckListTemplate
 
 
 def get_directory(owner, directory_id):
@@ -62,3 +62,11 @@ def get_directory_list_ajax(user, directory_id: int):
 def add_new_directory(new_directory_name, parent_id, owner):
     new_directory = Directory(name=new_directory_name, parent=parent_id, owner=owner)
     print(new_directory.save())
+
+
+def add_new_checklist(new_checklist_name, parent_id, owner):
+    directory = Directory.objects.get(id=parent_id, owner=owner)
+    print(f'Directory for creating checklist: {directory}')
+    new_checklist = CheckListTemplate(name=new_checklist_name, directory=directory)
+    print(f'New checklist object: {new_checklist}')
+    print(new_checklist.save())

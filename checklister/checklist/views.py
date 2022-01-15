@@ -33,6 +33,16 @@ def index(request):
                             json_response = get_directory_list_ajax(user=request.user, directory_id=parent_directory_id)
                             print(f'Json response: {json_response}')
                             return JsonResponse(json_response, status=200)
+                elif 'new_checklist_name' in request.POST and 'current_directory_id' in request.POST:
+                    if request.POST['current_directory_id'].isdigit():
+                        parent_directory_id = int(request.POST['current_directory_id'])
+                        if parent_directory_id == 0 or get_directory(request.user, directory_id=parent_directory_id):
+                            add_new_checklist(new_checklist_name=request.POST['new_checklist_name'],
+                                  parent_id=parent_directory_id,
+                                  owner=request.user)
+                            json_response = get_directory_list_ajax(user=request.user, directory_id=parent_directory_id)
+                            print(f'Json response: {json_response}')
+                            return JsonResponse(json_response, status=200)
                 return JsonResponse({'error': 'Error'}, status=500)
             else:
                 return JsonResponse({'error': 'Error'}, status=500)
