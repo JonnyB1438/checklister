@@ -78,15 +78,22 @@ $(document).ready(function () {
 
 function load_json_data(response) {
     $("#list").empty();
-    for (var key in response) {
+    for (var key in response['directories']) {
         if (key == 0) {
-            console.log('Path:' + response[key]['id'] + '; value: ' + response[key]['name']);
-            $("#parent_dir").html(response[key]['name']);
-            $("#parent_dir").attr('value', response[key]['id']);
+            console.log('Path:' + response['directories'][key]['id'] +
+                        '; value: ' + response['directories'][key]['name']);
+            $("#parent_dir").html(response['directories'][key]['name']);
+            $("#parent_dir").attr('value', response['directories'][key]['id']);
         }
         else {
-            console.log('String:' + response[key]['id'] + '; value: ' + response[key]['name']);
-            $("#list").append('<li class="list" value="' + response[key]['id'] + '">' + response[key]['name'] + '</li>');
+            console.log('Directory:' + response['directories'][key]['id'] +
+                        '; value: ' + response['directories'][key]['name']);
+            $("#list").append('<li class="list" value="' + response['directories'][key]['id'] +
+                              '">' + response['directories'][key]['name'] + '</li>');
         };
+    };
+    for (var key in response['checklists']) {
+            console.log('Checklist:' + response['checklists'][key]['id'] + '; value: ' + response['checklists'][key]['name']);
+            $("#list").append('<li class="check_list" value="' + response['checklists'][key]['id'] + '">' + response['checklists'][key]['name'] + '</li>');
     };
 };

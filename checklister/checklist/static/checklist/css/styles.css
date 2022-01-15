@@ -45,7 +45,9 @@ li {
     padding: 0;
 }
 
-#list > li {
+/*#list > li {*/
+
+.list {
     cursor: pointer;
     user-select: none;
     border: 1px solid lightblue;
@@ -58,8 +60,25 @@ li {
     padding-left: 10px;
 }
 
-#list > li:hover {
+.list:hover {
     background-color: #9cd9ed;
+}
+
+.check_list {
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid brown;
+    color: blue;
+    background-color: #ffff7b;
+    border-radius: 3px;
+    margin: 10px 0 10px 20px;
+    font-size: 20px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.check_list:hover {
+    background-color: yellow;
 }
 
 #parent_dir:hover {
