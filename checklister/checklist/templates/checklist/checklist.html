@@ -3,20 +3,28 @@
 {% block title %}My checklist{% endblock %}
 
 {% block content %}
-    <div id="list_block">
+<div class="parent">
+    <div id="list_block" class="child">
         <div id="parent_dir" value="0">/</div>
         {% if list_directories %}
         <ul id="list">
-<!--            <li class="list" id="first" value="">/</li>-->
             {% for directory in list_directories %}
                 <li class="list" value="{{ directory.id }}">{{ directory.name }}</li>
-<!--                <li class="list" id="dir{{ directory.id }}" value="{{ directory.id }}">{{ directory.name }}</li>-->
             {% endfor %}
         </ul>
         {% else %}
         <h2>User undefined!</h2>
         {% endif %}
+        <div class="adding">
+            <input type="text" id="dir_name" name="dir_name" value="" placeholder="Add directory...">
+            <div id="add_dir" class="add_btn">+</div>
+        </div>
+        <div class="adding">
+            <input type="text" id="checklist_name" name="checklist_name" value="" placeholder="Add checklist...">
+            <div id="add_checklist" class="add_btn">+</div>
+        </div>
     </div>
-    <div id="content">
+    <div id="content" class="child">
     </div>
+</div>
 {% endblock %}
