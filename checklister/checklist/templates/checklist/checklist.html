@@ -6,7 +6,7 @@
 <div class="parent">
     {% csrf_token %}
     <div id="list_block" class="child">
-        <div id="parent_dir" value="0">/</div>
+        <div class="parent_dir" value="0">/</div>
         {% if list_directories %}
         <ul id="list">
             {% for directory in list_directories %}
@@ -24,6 +24,7 @@
             <input type="text" id="checklist_name" name="checklist_name" value="" placeholder="Add checklist...">
             <div id="add_checklist" class="add_btn">+</div>
         </div>
+        <div id="delete_mode" class="delete_mode" value="0">Set Delete Mode</div>
     </div>
     <div id="content" class="child">
     </div>

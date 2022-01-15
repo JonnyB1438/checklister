@@ -38,7 +38,7 @@ def get_parent_directory_path(owner, directory_id):
         directory = get_directory(owner=owner, directory_id=directory_id)
         pprint(f'directory = {directory}')
         if not directory:
-            return redirect('/checklist/')
+            return redirect('checklist')
         elif directory['parent']:
             parent_directory_path = '/'+ directory['name'] + parent_directory_path
             directory_id = directory['parent']
@@ -79,3 +79,22 @@ def add_new_checklist(new_checklist_name, parent_id, owner):
     new_checklist = CheckListTemplate(name=new_checklist_name, directory=directory)
     print(f'New checklist object: {new_checklist}')
     print(new_checklist.save())
+
+
+def is_checklist(id, directory):
+    return CheckListTemplate.objects.filter(id=id, directory=Directory.objects.get(id=directory))
+
+
+def delete_checklist(id):
+    CheckListTemplate.objects.filter(id=id).delete()
+
+
+def delete_directory(id):
+    print(f'========Start function for id={id}')
+    child_directories = Directory.objects.filter(parent=id).values('id')
+    print(f'Child directories: {child_directories}')
+    if child_directories:
+        for child_directory in child_directories:
+            delete_directory(child_directory['id'])
+    print(f'Deletion directory id=: {id}')
+    Directory.objects.filter(id=id).delete()

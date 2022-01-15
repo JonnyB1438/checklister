@@ -27,7 +27,7 @@ li {
     flex: 3 1 auto;
 }
 
-#parent_dir {
+.parent_dir {
     cursor: pointer;
     user-select: none;
     border: 1px solid black;
@@ -115,4 +115,27 @@ li {
     font-size: 14pt;
     font-weight: bold;
     background-color: #88ff88;
+}
+
+#delete_mode {
+    cursor: pointer;
+    user-select: none;
+    border: 2px solid black;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 20px;
+    text-align: center;
+    display: block;
+}
+
+.delete_mode, .delete {
+    background-color: #ff8e8e;
+}
+
+.normal_mode {
+    background-color: #88ff88;
+}
+
+.hide {
+    display: none;
 }

@@ -4,20 +4,46 @@ $(document).ready(function () {
     console.log("Starting...");
 
     $(document).on("click", ".list", function(){
-        console.log('Click!' + $(this).text());
-        console.log($(this).attr('value'))
+        console.log('Click! - ' + $(this).text());
+        if ($(this).hasClass('delete')) {}
+        else {
+            console.log($(this).attr('value'))
+            $.ajax({
+                url: '',
+                type: 'get',
+                data: {
+                    element_id: $(this).attr('value'),
+                },
+                success: load_json_data,
+                error: function(response) {location.reload();},
+            });
+        };
+    });
+
+    $(document).on("click", ".delete", function(){
+        console.log("We will delete" + $(this).attr('innerHtml'));
+        var dict = {};
+        var element;
+        dict['csrfmiddlewaretoken'] = csrf;
+        if ($(this).hasClass('check_list')){
+            dict['checklist'] = $(this).attr('value');
+            dict['directory_id'] = $('.parent_dir').attr('value');
+        }
+        else {
+            dict['directory_id'] = $(this).attr('value');
+        };
+        console.log("Data for sending: " + dict);
+        element = $(this);
         $.ajax({
             url: '',
-            type: 'get',
-            data: {
-                element_id: $(this).attr('value'),
-            },
-            success: load_json_data,
+            type: 'post',
+            data: dict,
+            success: element.fadeOut(),
             error: function(response) {location.reload();},
         });
     });
 
-    $(document).on("click", "#parent_dir", function(){
+    $(document).on("click", ".parent_dir", function(){
         console.log('Click back! - ' + $(this).text());
         console.log($(this).attr('value'))
         $.ajax({
@@ -43,7 +69,7 @@ $(document).ready(function () {
                 url: '',
                 type: 'post',
                 data: {
-                    current_directory_id: $("#parent_dir").attr('value'),
+                    current_directory_id: $(".parent_dir").attr('value'),
                     new_directory_name: dir_name,
                     csrfmiddlewaretoken: csrf,
                 },
@@ -64,13 +90,38 @@ $(document).ready(function () {
                 url: '',
                 type: 'post',
                 data: {
-                    current_directory_id: $("#parent_dir").attr('value'),
+                    current_directory_id: $(".parent_dir").attr('value'),
                     new_checklist_name: checklist_name,
                     csrfmiddlewaretoken: csrf,
                 },
                 success: load_json_data,
                 error: function(response) {location.reload();},
             });
+        };
+    });
+
+    $(document).on("click", "#delete_mode", function(){
+        console.log('Click Delete Mode!');
+        console.log($(this).attr('value'));
+        if ($(this).attr('value') == '0') {
+            $(this).attr('value', '1');
+            $(this).text('Set Normal Mode');
+            $(this).removeClass("delete_mode")
+            $(this).addClass("normal_mode")
+            $(".list").addClass("delete")
+            $(".check_list").addClass("delete")
+            $(".adding").addClass("hide")
+            $(".parent_dir").addClass("hide")
+        }
+        else {
+            $(this).attr('value', '0');
+            $(this).text('Set Delete Mode');
+            $(this).removeClass("normal_mode")
+            $(this).addClass("delete_mode")
+            $(".list").removeClass("delete")
+            $(".check_list").removeClass("delete")
+            $(".adding").removeClass("hide")
+            $(".parent_dir").removeClass("hide")
         };
     });
 
@@ -82,8 +133,8 @@ function load_json_data(response) {
         if (key == 0) {
             console.log('Path:' + response['directories'][key]['id'] +
                         '; value: ' + response['directories'][key]['name']);
-            $("#parent_dir").html(response['directories'][key]['name']);
-            $("#parent_dir").attr('value', response['directories'][key]['id']);
+            $(".parent_dir").html(response['directories'][key]['name']);
+            $(".parent_dir").attr('value', response['directories'][key]['id']);
         }
         else {
             console.log('Directory:' + response['directories'][key]['id'] +
