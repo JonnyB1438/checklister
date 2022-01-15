@@ -57,3 +57,8 @@ def get_directory_list_ajax(user, directory_id: int):
     response = dict(zip(range(len(response_list)), response_list))
     print(f'Response dictionary: {response}')
     return response
+
+
+def add_new_directory(new_directory_name, parent_id, owner):
+    new_directory = Directory(name=new_directory_name, parent=parent_id, owner=owner)
+    print(new_directory.save())

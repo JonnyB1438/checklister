@@ -1,8 +1,10 @@
 $(document).ready(function () {
+
+    var csrf = $("input[name=csrfmiddlewaretoken]").val();
     console.log("Starting...");
+
     $(document).on("click", ".list", function(){
         console.log('Click!' + $(this).text());
-        let element = $(this)
         console.log($(this).attr('value'))
         $.ajax({
             url: '',
@@ -17,7 +19,6 @@ $(document).ready(function () {
 
     $(document).on("click", "#parent_dir", function(){
         console.log('Click back! - ' + $(this).text());
-        let element = $(this)
         console.log($(this).attr('value'))
         $.ajax({
             url: '',
@@ -29,6 +30,27 @@ $(document).ready(function () {
             success: load_json_data,
             error: function(response) {location.reload();},
         });
+    });
+
+    $(document).on("click", "#add_dir", function(){
+        console.log('Click adding directory! - ' + $(this).text());
+        var dir_name = $("#dir_name").val();
+        console.log(dir_name);
+        console.log(csrf);
+        if (dir_name) {
+            $("#dir_name").val("");
+            $.ajax({
+                url: '',
+                type: 'post',
+                data: {
+                    current_directory_id: $("#parent_dir").attr('value'),
+                    new_directory_name: dir_name,
+                    csrfmiddlewaretoken: csrf,
+            },
+            success: load_json_data,
+            error: function(response) {location.reload();},
+        });
+        };
     });
 
 });

@@ -4,6 +4,7 @@
 
 {% block content %}
 <div class="parent">
+    {% csrf_token %}
     <div id="list_block" class="child">
         <div id="parent_dir" value="0">/</div>
         {% if list_directories %}
