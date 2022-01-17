@@ -8,12 +8,14 @@ from .models import Directory, CheckListTemplate
 def get_directory(owner, directory_id):
     print('======get_directory======')
     directory_response = Directory.objects.filter(owner=owner, id=directory_id).values('id', 'name', 'parent')
-    print(f'get_directory_response: {directory_response}')
     if directory_response:
         directory_response = directory_response[0]
-        print('One string')
-    print(f'get_directory_response_2: {directory_response}')
+    print(f'get_directory_response: {directory_response}')
     return directory_response
+
+
+def get_directories_by_parent(owner, parent_id):
+    return Directory.objects.filter(owner=owner, parent=parent_id).values('id', 'name')
 
 
 def get_directory_checklists(owner, directory_id):
@@ -50,14 +52,14 @@ def get_parent_directory_path(owner, directory_id):
 
 def get_directory_list_ajax(user, directory_id: int):
     print('======get_directory_list_ajax======')
-    directory_list = get_directory_list(owner=user, parent_directory_id=directory_id)
+    # directory_list = get_directory_list(owner=user, parent_directory_id=directory_id)
+    directory_list = get_directories_by_parent(owner=user, parent_id=directory_id)
     print(f'Directory list: {directory_list}')
     if directory_id == 0:
         parent_directory_path = '/'
-        directory_checklists = {}
     else:
         parent_directory_path = get_parent_directory_path(owner=user, directory_id=directory_id)
-        directory_checklists = get_directory_checklists(owner=user, directory_id=directory_id)
+    directory_checklists = get_directory_checklists(owner=user, directory_id=directory_id)
     directory_response_list = [{'id': directory_id, 'name': parent_directory_path}]
     directory_response_list.extend(directory_list)
     print(f'Response dictionary: {directory_response_list}')
@@ -71,6 +73,7 @@ def get_directory_list_ajax(user, directory_id: int):
 def add_new_directory(new_directory_name, parent_id, owner):
     new_directory = Directory(name=new_directory_name, parent=parent_id, owner=owner)
     print(new_directory.save())
+    return {'id': new_directory.pk, 'name': new_directory.name}
 
 
 def add_new_checklist(new_checklist_name, parent_id, owner):

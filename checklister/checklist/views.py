@@ -13,9 +13,10 @@ def index(request):
                 print(f'Request GET: {request.GET}')
                 if 'element_id' in request.GET and request.GET['element_id'].isdigit():
                     directory_id = int(request.GET['element_id'])
-                    if get_directory(request.user, directory_id=directory_id):
+                    if get_directory(owner=request.user, directory_id=directory_id):
                         if 'go_level_up' in request.GET and request.GET['go_level_up']:
-                            directory_id = get_directory(owner=request.user, directory_id=directory_id)['parent']
+                            if get_directory(owner=request.user, directory_id=directory_id)['parent']:
+                                directory_id = get_directory(owner=request.user, directory_id=directory_id)['parent']
                         print(f'Directory id: {directory_id}')
                         json_response = get_directory_list_ajax(user=request.user, directory_id=directory_id)
                         print(f'Json response: {json_response}')
@@ -57,9 +58,17 @@ def index(request):
                 return JsonResponse({'error': 'Error'}, status=500)
         else:
             print('------------------LOAD------------------')
-            user_root_directory = get_directory_list(owner=request.user)
-            print(f'User root directory: {user_root_directory}')
-            return render(request, 'checklist/checklist.html', {'list_directories': user_root_directory})
+            root_directory = get_directories_by_parent(owner=request.user, parent_id=0)
+            if not root_directory:
+                root_directory = add_new_directory(new_directory_name='/', parent_id=0, owner=request.user)
+            else:
+                root_directory = root_directory[0]
+            directory_list = get_directories_by_parent(owner=request.user, parent_id=root_directory["id"])
+            directory_checklists = get_directory_checklists(owner=request.user, directory_id=root_directory["id"])
+            return render(request, 'checklist/checklist.html', {'root_directory': {'id': root_directory['id'],
+                                                                                   'name': root_directory['name']},
+                                                                'directory_list': directory_list,
+                                                                'checklist_list': directory_checklists})
     return render(request, 'checklist/checklist.html') # TODO change to redirection on a login page
 
 
