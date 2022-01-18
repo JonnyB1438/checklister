@@ -91,7 +91,7 @@ li {
     width: 100%;
 }
 
-.adding > input {
+.adding > input, #add_input {
     border: 2px solid black;
     border-radius: 5px;
     flex: 0 1 auto;

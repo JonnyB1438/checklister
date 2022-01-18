@@ -143,6 +143,16 @@ $(document).ready(function () {
         });
     });
 
+    $(document).on("click", "#add_string_btn", function(){
+        console.log("Adding string...");
+        new_string = $("#add_string_input").val();
+        if (new_string) {
+            console.log(new_string);
+            $('#checklist_data').append('<div><input type="checkbox"><label>' + new_string + '</label></div>');
+        }
+
+    });
+
 });
 
 // load directory and checklist lists on the from ajax response
@@ -172,7 +182,11 @@ function load_json_data(response) {
 // response{'id', 'name', 'data'}
 function load_checklist_data(response) {
     $("#content").empty();
-    console.log("Checklist data:" + response)
-    $('#content').append('<h2 value="' + response['id'] + '">' + response['name'] + '</h2>')
-    $('#content').append('<div>' + response['data'] + '</div>')
+    console.log("Checklist data:" + response);
+    $('#content').append('<h2 value="' + response['id'] + '">' + response['name'] + '</h2>');
+    $('#content').append('<div id="checklist_data">' + response['data'] + '</div>');
+    $('#content').append('<div id="add_string_div" class="adding"></div>');
+    $('#add_string_div').append('<input type="text" id="add_string_input" value="" placeholder="Enter a new string...">');
+    $('#add_string_div').append('<div id="add_string_btn" class="add_btn">Add</div>');
+    $('#content').append('<div>Save checklist</div>');
 };
