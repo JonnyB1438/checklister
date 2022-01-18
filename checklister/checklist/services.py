@@ -119,9 +119,25 @@ def add_new_checklist(new_checklist_name: str, parent_id: int, owner):
     CheckListTemplate(name=new_checklist_name, directory=directory).save()
 
 
+def get_existed_checklist_by_owner(checklist_id: int, owner) -> dict:
+    """
+    Get the checklist after checking that it belongs to the owner.
+
+    :param checklist_id: an ID of the checklist.
+    :param owner: a user of an auth user type.
+    :return: a dict with keys: 'id', 'name', 'data'.
+    """
+    if CheckListTemplate.objects.filter(id=checklist_id) \
+            and CheckListTemplate.objects.get(id=checklist_id).directory.owner == owner:
+        checklist_data = CheckListTemplate.objects.filter(id=checklist_id).values('id', 'name', 'data')
+        if checklist_data:
+            return checklist_data[0]
+    return {}
+
+
 def delete_existed_checklist_by_owner(checklist_id: int, owner) -> bool:
     """
-    Delete a checklist after checking that it belongs to the owner.
+    Delete the checklist after checking that it belongs to the owner.
 
     :param checklist_id: an ID of the deleting checklist.
     :param owner: a user of an auth user type.
@@ -183,6 +199,9 @@ def get_handler(request):
             directory_id = directory['parent']
         json_response = get_json_directory_content(owner=request.user, directory_id=directory_id)
         print(f'Json response: {json_response}')
+        return JsonResponse(json_response, status=200)
+    elif 'checklist_id' in request.GET and request.GET['checklist_id'].isdigit():
+        json_response = get_existed_checklist_by_owner(checklist_id=int(request.GET['checklist_id']), owner=request.user)
         return JsonResponse(json_response, status=200)
     return JsonResponse({'error': 'Error'}, status=500)
 

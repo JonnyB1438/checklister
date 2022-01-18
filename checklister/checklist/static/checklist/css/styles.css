@@ -45,8 +45,6 @@ li {
     padding: 0;
 }
 
-/*#list > li {*/
-
 .list {
     cursor: pointer;
     user-select: none;

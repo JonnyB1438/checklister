@@ -21,29 +21,6 @@ $(document).ready(function () {
         };
     });
 
-    // Deletion directory or checklist
-    $(document).on("click", ".delete", function(){
-        console.log("We will delete" + $(this).attr('innerHtml'));
-        var dict = {};
-        var element;
-        dict['csrfmiddlewaretoken'] = csrf;
-        if ($(this).hasClass('check_list')){
-            dict['delete_checklist_id'] = $(this).attr('value');
-        }
-        else if ($(this).hasClass('list')){
-            dict['delete_directory_id'] = $(this).attr('value');
-        };
-        console.log("Data for sending: " + dict);
-        element = $(this);
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: dict,
-            success: element.fadeOut(),
-            error: function(response) {location.reload();},
-        });
-    });
-
     // Enter into the parent directory
     $(document).on("click", ".parent_dir", function(){
         console.log('Click back! - ' + $(this).text());
@@ -59,6 +36,19 @@ $(document).ready(function () {
         });
     });
 
+    //loading checklist information
+    $(document).on("click", ".check_list", function(){
+        console.log("Choosen checklist ID:" + $(this).attr('value'));
+        $.ajax({
+            url: '',
+            type: 'get',
+            data: {
+                checklist_id: $(this).attr('value'),
+            },
+            success: load_checklist_data,
+            error: function(response) {location.reload();},
+        });
+    });
 
     // creation a new directory into the current directory
     $(document).on("click", "#add_dir", function(){
@@ -130,9 +120,33 @@ $(document).ready(function () {
         };
     });
 
+    // Deletion directory or checklist
+    $(document).on("click", ".delete", function(){
+        console.log("We will delete" + $(this).attr('innerHtml'));
+        var dict = {};
+        var element;
+        dict['csrfmiddlewaretoken'] = csrf;
+        if ($(this).hasClass('check_list')){
+            dict['delete_checklist_id'] = $(this).attr('value');
+        }
+        else if ($(this).hasClass('list')){
+            dict['delete_directory_id'] = $(this).attr('value');
+        };
+        console.log("Data for sending: " + dict);
+        element = $(this);
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: dict,
+            success: element.fadeOut(),
+            error: function(response) {location.reload();},
+        });
+    });
+
 });
 
 // load directory and checklist lists on the from ajax response
+// response{'parent_directory{'id', 'name'}', 'directories{numeric:{'id', 'name'}}', 'checklists{numeric:{'id', 'name'}}'}
 function load_json_data(response) {
     $("#list").empty();
     $("#check_list").empty();
@@ -152,4 +166,13 @@ function load_json_data(response) {
             $("#check_list").append('<li class="check_list" value="' + response['checklists'][key]['id'] + '">' +
                                     response['checklists'][key]['name'] + '</li>');
     };
+};
+
+// load checklist data in .content block
+// response{'id', 'name', 'data'}
+function load_checklist_data(response) {
+    $("#content").empty();
+    console.log("Checklist data:" + response)
+    $('#content').append('<h2 value="' + response['id'] + '">' + response['name'] + '</h2>')
+    $('#content').append('<div>' + response['data'] + '</div>')
 };
