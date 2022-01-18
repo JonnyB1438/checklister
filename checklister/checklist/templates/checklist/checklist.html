@@ -6,15 +6,23 @@
 <div class="parent">
     {% csrf_token %}
     <div id="list_block" class="child">
-        <div class="parent_dir" value="{{ root_directory.id }}">{{ root_directory.name }}</div>
+    <h3>Directories:</h3>
+    {% if content.parent_directory %}
+        <div class="parent_dir" value="{{ content.parent_directory.id }}">{{ content.parent_directory.name }}</div>
+    {% else %}
+        <div class="parent_dir" value=""> </div>
+    {% endif %}
         <ul id="list">
-            {% if directory_list %}
-                {% for directory in directory_list %}
+            {% if content.directories %}
+                {% for directory in content.directories.values %}
                     <li class="list" value="{{ directory.id }}">{{ directory.name }}</li>
                 {% endfor %}
             {% endif %}
-            {% if checklist_list %}
-                {% for checklist in checklist_list %}
+        </ul>
+        <h4>Checklists:</h4>
+        <ul id="check_list">
+            {% if content.checklists %}
+                {% for checklist in content.checklists.values %}
                     <li class="check_list" value="{{ checklist.id }}">{{ checklist.name }}</li>
                 {% endfor %}
             {% endif %}
