@@ -1,3 +1,5 @@
+import json
+
 from django.http.response import JsonResponse
 
 from .models import Directory, CheckListTemplate
@@ -135,6 +137,28 @@ def get_existed_checklist_by_owner(checklist_id: int, owner) -> dict:
     return {}
 
 
+def update_checklist_data(checklist_id, owner, name=None, data=None):
+    """
+    Update the checklist after checking that it belongs to the owner.
+
+    :param checklist_id: an ID of the checklist.
+    :param owner: a user of an auth user type.
+    :param name: if it is set, replaces checklist 'name'
+    :param data: if it is set, replaces checklist 'data'
+    :return: a dict with keys: 'id', 'name', 'data'.
+    """
+    if CheckListTemplate.objects.filter(id=checklist_id) \
+            and CheckListTemplate.objects.get(id=checklist_id).directory.owner == owner:
+        checklist = CheckListTemplate.objects.get(id=checklist_id)
+        if name:
+            checklist.name = name
+        if data:
+            checklist.data = data
+        checklist.save()
+        return True
+    return False
+
+
 def delete_existed_checklist_by_owner(checklist_id: int, owner) -> bool:
     """
     Delete the checklist after checking that it belongs to the owner.
@@ -244,4 +268,17 @@ def post_handler(request):
     elif 'delete_checklist_id' in request.POST and request.POST['delete_checklist_id'].isdigit():
         delete_existed_checklist_by_owner(checklist_id=request.POST['delete_checklist_id'], owner=request.user)
         return JsonResponse({'status': 'Success'}, status=200)
+    # update checklist information
+    elif 'updated_checklist_id' in request.POST and request.POST['updated_checklist_id'].isdigit():
+        print(f'Checklist ID: {request.POST["updated_checklist_id"]}')
+        print(f'Checklist name: {request.POST["checklist_name"]}')
+        print(f'Checklist data(json): {request.POST["checklist_data"]}')
+        # data = json.loads(request.POST["checklist_data"])
+        # print(f'Checklist data(dict): {data}')
+        print(json.loads(request.POST["checklist_data"]))
+        if update_checklist_data(checklist_id=int(request.POST["updated_checklist_id"]),
+                                 owner=request.user,
+                                 name=request.POST["checklist_name"],
+                                 data=request.POST["checklist_data"]):
+            return JsonResponse({'status': 'Success'}, status=200)
     return JsonResponse({'error': 'Error'}, status=500)

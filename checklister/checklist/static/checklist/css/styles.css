@@ -32,7 +32,7 @@ li {
     user-select: none;
     border: 1px solid black;
     border-radius: 3px;
-    background-color: #88ff88;
+    background-color: #baffba;
     width: 90%;
     font-size: 20px;
     text-align: left;
@@ -112,7 +112,38 @@ li {
     text-align: center;
     font-size: 14pt;
     font-weight: bold;
-    background-color: #88ff88;
+    background-color: #baffba;
+}
+
+.button {
+    border: 2px solid black;
+    border-radius: 5px;
+    flex: 0 1 auto;
+    margin: 10px;
+    height: 20px;
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+    background-color: #baffba;
+}
+
+#checklist_data > div {
+    margin: 10px;
+    height: 20px;
+    text-align: left;
+    font-size: 14pt;
+}
+
+#checklist_data > div > label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.active {
+    border: 2px solid black;
+    border-radius: 5px;
 }
 
 #delete_mode {
@@ -132,6 +163,13 @@ li {
 
 .normal_mode {
     background-color: #88ff88;
+}
+
+#editing_div {
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
 }
 
 .hide {
