@@ -4,38 +4,45 @@
 
 {% block content %}
 {% load static %}
-<div class="parent">
+<div class="flex_container">
     {% csrf_token %}
     <div id="list_block" class="child">
-    <h3>Directories:</h3>
+    <h3>Your checklist catalog:</h3>
+    <h4>The full path:</h4>
     {% if content.parent_directory %}
         <div class="parent_dir" value="{{ content.parent_directory.id }}">{{ content.parent_directory.name }}</div>
     {% else %}
         <div class="parent_dir" value=""> </div>
     {% endif %}
-        <ul id="list">
+    <h4>Directories:</h4>
+        <div id="directory_list">
             {% if content.directories %}
                 {% for directory in content.directories.values %}
-<!--                    <li class="list" value="{{ directory.id }}">{{ directory.name }}<img class="menu_img" src="{% static 'checklist/img/menu.webp' %}"></li>-->
-                    <li class="list" value="{{ directory.id }}">{{ directory.name }}</li>
+                    <div class="directory flex_container">
+                        <div class="directory_name flex_item" value="{{ directory.id }}">{{ directory.name }}</div>
+                        <img class="menu_img flex_end_item" src="{% static 'checklist/img/menu.webp' %}">
+                    </div>
                 {% endfor %}
             {% endif %}
-        </ul>
+        </div>
+        <hr>
         <h4>Checklists:</h4>
-        <ul id="check_list">
+        <div id="checklist_list">
             {% if content.checklists %}
                 {% for checklist in content.checklists.values %}
-                    <li class="check_list" value="{{ checklist.id }}">{{ checklist.name }}</li>
+                    <div class="checklist flex_container">
+                        <div class="checklist_name flex_item" value="{{ checklist.id }}">{{ checklist.name }}</div>
+                        <img class="menu_img flex_end_item" src="{% static 'checklist/img/menu.webp' %}">
+                    </div>
                 {% endfor %}
             {% endif %}
-        </ul>
-        <div class="adding">
-            <input type="text" id="dir_name" name="dir_name" value="" placeholder="Add directory...">
-            <div id="add_dir" class="add_btn button">+</div>
         </div>
         <div class="adding">
-            <input type="text" id="checklist_name" name="checklist_name" value="" placeholder="Add checklist...">
-            <div id="add_checklist" class="add_btn button">+</div>
+            <input type="text" id="entered_name" name="dir_name" value="" placeholder="Enter a directory or checklist name for adding...">
+            <div class="flex_container">
+                <div id="add_dir" class="button flex_item">Add directory</div>
+                <div id="add_checklist" class="button flex_item">Add checklist</div>
+            </div>
         </div>
         <div id="delete_mode" class="delete_mode" value="0">Set Delete Mode</div>
     </div>

@@ -1,35 +1,26 @@
-li {
-    color: green;
+h2 {
+    text-align: center;
 }
 
-.menu_img {
-    width: 20px;
-    height: 20px;
-}
-
-.parent {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-    align-items: stretch;
-    height: 100%;
-    width: 100%;
+h4 {
+    margin: 5px 0 0 0;
 }
 
 .child {
     border: 2px solid black;
     border-radius: 5px;
-    flex: 0 1 auto;
     margin: 10px;
     padding: 10px;
 }
 
 #list_block {
+    max-width: 450px;
     flex: 1 1 auto;
 }
 
 #content {
-    flex: 3 1 auto;
+    max-width: 900px;
+    flex: 2 1 auto;
 }
 
 .parent_dir {
@@ -38,162 +29,15 @@ li {
     border: 1px solid black;
     border-radius: 3px;
     background-color: #baffba;
-    width: 90%;
+    box-sizing: border-box;
     font-size: 20px;
     text-align: left;
     padding-left: 10px;
     display: block;
 }
 
-#list, #check_list {
-    list-style: none;
-    padding: 0;
-}
-
-.list {
-    cursor: pointer;
-    user-select: none;
-    border: 1px solid lightblue;
-    color: blue;
-    background-color: #e7e7e7;
-    border-radius: 3px;
-    margin: 10px 0 10px 20px;
-    font-size: 20px;
-    text-align: left;
-    padding-left: 10px;
-}
-
-.list:hover {
-    background-color: #9cd9ed;
-}
-
-.check_list {
-    cursor: pointer;
-    user-select: none;
-    border: 1px solid brown;
-    color: blue;
-    background-color: #ffff7b;
-    border-radius: 3px;
-    margin: 10px 0 10px 20px;
-    font-size: 20px;
-    text-align: left;
-    padding-left: 10px;
-}
-
-.check_list:hover {
-    background-color: yellow;
-}
-
-#parent_dir:hover {
-    background-color: #56ff56;
-}
-
-.adding {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-    align-items: stretch;
-    width: 100%;
-}
-
-.adding > input, #add_input {
-    border: 2px solid black;
-    border-radius: 5px;
-    flex: 0 1 auto;
-    margin: 10px;
-    width: 70%;
-    height: 20px;
-}
-
-.adding > .add_btn {
-    border: 2px solid black;
-    border-radius: 5px;
-    flex: 0 1 auto;
-    margin: 10px;
-    height: 20px;
-    width: 20px;
-    cursor: pointer;
-    user-select: none;
-    text-align: center;
-    font-size: 14pt;
-    font-weight: bold;
-    background-color: #baffba;
-}
-
-.button {
-    border: 2px solid black;
-    border-radius: 5px;
-    flex: 0 1 auto;
-    margin: 10px;
-    height: 20px;
-    cursor: pointer;
-    user-select: none;
-    text-align: center;
-    font-size: 14pt;
-    font-weight: bold;
-    background-color: #baffba;
-}
-
-#checklist_data > div > label {
-    cursor: pointer;
-    user-select: none;
-}
-
-.active {
-    border: 2px solid black;
-    border-radius: 5px;
-}
-
-#delete_mode {
-    cursor: pointer;
-    user-select: none;
-    border: 2px solid black;
-    border-radius: 5px;
-    width: 100%;
-    font-size: 20px;
-    text-align: center;
-    display: block;
-}
-
-.delete_mode, .delete {
-    background-color: #ff8e8e;
-}
-
-.normal_mode {
-    background-color: #88ff88;
-}
-
-#editing_div {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-    align-items: stretch;
-    width: 100%;
-}
-
-#checklist_data > div {
-    margin: 10px;
-    height: 20px;
-    text-align: left;
-    font-size: 14pt;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: left;
-    align-items: flex-start;
-    width: 100%;
-}
-
-#edit_string_input {
-    flex: 4 1 auto;
-}
-
-#save_string_btn {
-    flex: 1 1 auto;
-    margin: 0 10px 0 10px ;
-}
-
-.hide {
-    display: none;
+.parent_dir:hover, .button:hover {
+    background-color: #7dff7d;
 }
 
 /* Класс контекстного меню: */
@@ -218,3 +62,159 @@ li {
 .context-menu ul li a { color: #333; text-decoration: none; font-size: 12px; display: block; padding: 5px; }
 
 .context-menu ul li a:hover { background-color: #eee; }
+
+
+.flex_container {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+
+.flex_item {
+    flex: 1 1 auto;
+}
+
+.flex_end_item {
+    flex: 0 1 auto;
+    align-self: center;
+    justify-self: flex-end;
+}
+
+img.flex_end_item   {
+    width: 20px;
+    height: 20px;
+}
+
+#directory_list, #checklist_list {
+    min-height: 60px;
+}
+
+.directory {
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid lightblue;
+    color: blue;
+    background-color: #e7e7e7;
+    border-radius: 3px;
+    margin: 10px 0 10px 20px;
+    font-size: 20px;
+    text-align: left;
+}
+
+.directory_name {
+    padding-left: 10px;
+}
+
+.directory:hover {
+    background-color: #9cd9ed;
+}
+
+.checklist {
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid brown;
+    color: blue;
+    background-color: #ffff7b;
+    border-radius: 3px;
+    margin: 10px 0 10px 20px;
+    font-size: 20px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.checklist_name {
+    padding-left: 10px;
+}
+
+.checklist:hover {
+    background-color: yellow;
+}
+
+#delete_mode {
+    cursor: pointer;
+    user-select: none;
+    border: 2px solid black;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 20px;
+    text-align: center;
+    display: block;
+}
+
+.delete_mode, .delete {
+    background-color: #ff8e8e;
+}
+
+.normal_mode {
+    background-color: #88ff88;
+}
+
+.adding > input {
+    border: 2px solid black;
+    border-radius: 5px;
+    margin: 10px 0 10px 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 30px;
+    font-size: 12pt;
+}
+
+.button {
+    border: 2px solid black;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 0 10px 0 10px;
+    height: 25px;
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+    background-color: #baffba;
+}
+
+#checklist_data > div {
+    margin: 10px 0 10px 0;
+    height: 20px;
+    text-align: left;
+    font-size: 14pt;
+    width: 100%;
+}
+
+#checklist_data > div:not(.active) {
+    border: 1px solid transparent;
+}
+
+#checklist_data > div:hover:not(.active) {
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+checkbox_label {
+    cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
+    word-break: break-word;
+}
+
+#save_string_btn {
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 0 10px 0 10px;
+    height: 20px;
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+    font-size: 12pt;
+    font-weight: bold;
+    background-color: #baffba;
+}
+
+.active {
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+.hide {
+    display: none;
+}
