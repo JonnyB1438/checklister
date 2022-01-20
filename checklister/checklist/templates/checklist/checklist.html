@@ -3,6 +3,7 @@
 {% block title %}My checklist{% endblock %}
 
 {% block content %}
+{% load static %}
 <div class="parent">
     {% csrf_token %}
     <div id="list_block" class="child">
@@ -15,6 +16,7 @@
         <ul id="list">
             {% if content.directories %}
                 {% for directory in content.directories.values %}
+<!--                    <li class="list" value="{{ directory.id }}">{{ directory.name }}<img class="menu_img" src="{% static 'checklist/img/menu.webp' %}"></li>-->
                     <li class="list" value="{{ directory.id }}">{{ directory.name }}</li>
                 {% endfor %}
             {% endif %}

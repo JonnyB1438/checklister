@@ -3,6 +3,11 @@ $(document).ready(function () {
     var csrf = $("input[name=csrfmiddlewaretoken]").val();
     console.log("Starting...");
 
+    //delete opened context menu
+    $(document).click(function() {
+        $('.context-menu').remove();
+    });
+
     // Entry into the directory
     $(document).on("click", ".list", function(){
         console.log('Click! - ' + $(this).text());
@@ -209,7 +214,25 @@ $(document).ready(function () {
     //edit checkbox string
     $(document).on("click", "#edit_label_btn", function(){
         console.log("Edit string...");
+        console.log($('.active .checkbox_label').text());
+        let label = $('.active .checkbox_label');
+        label.addClass('hide');
+        $('.active').append('<input type=text id="edit_string_input">');
+        $('.active').append('<div class="button" id="save_string_btn">Save</div>');
+        $('#edit_string_input').val(label.text()).select();
+//        console.log($('.checkbox_label .active').innerText())
+    });
+//    <div class="active">
+//        <input type="checkbox">
+//        <label class="checkbox_label">Проверить разрешение имен dns-сервером</label>
+//    </div>
 
+    //saving checkbox string changing
+    $(document).on('click', '#save_string_btn', function(){
+        console.log("Saving string...");
+        $(this).remove();
+        $('.active .checkbox_label').removeClass('hide').text($('#edit_string_input').val());
+        $('#edit_string_input').remove();
     });
 
     //delete checkbox string
@@ -218,6 +241,89 @@ $(document).ready(function () {
         $('.active').remove();
         $('#editing_div').children().addClass('hide');
     });
+
+//    $('.list').on("contextmenu", function(evt) {evt.preventDefault();});
+//    $(document)bind('contextmenu', function(e) {
+//        return false;
+//    });
+
+//    document.addEventListener( "contextmenu", function(e) {
+//    console.log(e);
+//  });
+
+//    $(document).contextmenu(function(event) {
+//        event.preventDefault();
+//    });
+
+    $('.list').contextmenu(function(event) {
+        event.preventDefault();
+        // Удаляем предыдущие вызванное контекстное меню:
+        $('.context-menu').remove();
+        let move_menu = '';
+        if ($('.parent_dir').text() != '/') {
+            move_menu += '<li><a href="#" value="' + $('.parent_dir').attr('value') + '">Move one Level Up</a></li>';
+        };
+        $(this).siblings().each(function(index, element) {
+            move_menu += '<li><a href="#" value="' + $(element).attr('value') + '">Move to "' + $(element).text() + '"</a></li>';
+        });
+        // Проверяем нажата ли именно правая кнопка мыши:
+        if (event.which === 3)  {
+            // Получаем элемент на котором был совершен клик:
+            var target = $(event.target);
+            // Создаем меню:
+            $('<div/>', {
+                class: 'context-menu' // Присваиваем блоку наш css класс контекстного меню:
+            })
+            .css({
+                left: event.pageX+'px', // Задаем позицию меню на X
+                top: event.pageY+'px' // Задаем позицию меню по Y
+            })
+            .appendTo('body') // Присоединяем наше меню к body документа:
+            .append( // Добавляем пункты меню:
+                 $('<ul/>').append('<li><a href="#">Remove directory</a></li>')
+                           .append('<li><a href="#">Edit name</a></li>')
+                           .append(move_menu)
+                   )
+             .show('fast'); // Показываем меню с небольшим стандартным эффектом jQuery. Как раз очень хорошо подходит для меню
+         }
+    });
+
+    $('.check_list').contextmenu(function(event) {
+        event.preventDefault();
+        // Удаляем предыдущие вызванное контекстное меню:
+        $('.context-menu').remove();
+        let move_menu = '';
+        if ($('.parent_dir').text() != '/') {
+            move_menu += '<li><a href="#" value="' + $('.parent_dir').attr('value') + '">Move one Level Up</a></li>';
+        };
+        $('.list').each(function(index, element) {
+            move_menu += '<li><a href="#" value="' + $(element).attr('value') + '">Move to "' + $(element).text() + '"</a></li>';
+        });
+        // Проверяем нажата ли именно правая кнопка мыши:
+        if (event.which === 3)  {
+            // Получаем элемент на котором был совершен клик:
+            var target = $(event.target);
+            // Создаем меню:
+            $('<div/>', {
+                class: 'context-menu' // Присваиваем блоку наш css класс контекстного меню:
+            })
+            .css({
+                left: event.pageX+'px', // Задаем позицию меню на X
+                top: event.pageY+'px' // Задаем позицию меню по Y
+            })
+            .appendTo('body') // Присоединяем наше меню к body документа:
+            .append( // Добавляем пункты меню:
+                 $('<ul/>').append('<li><a href="#">Remove checklist</a></li>')
+                           .append('<li><a href="#">Edit name</a></li>')
+                           .append(move_menu)
+                   )
+             .show('fast'); // Показываем меню с небольшим стандартным эффектом jQuery. Как раз очень хорошо подходит для меню
+         }
+    });
+
+    $(document).on('click', '.menu_img', function() {
+    });
+
 });
 
 // load directory and checklist lists on the from ajax response
