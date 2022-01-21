@@ -7,8 +7,13 @@ $(document).ready(function () {
     console.log("Starting...");
 
     //delete opened context menu
-    $(document).click(function() {
-        $('.context-menu').remove();
+    $(document).mouseup(function(e) {
+        let menu_element = $('.menu_img');
+        console.log("Menu element: " + menu_element);
+        console.log("Target element: " + e.target);
+        if (!menu_element.is(e.target)) {
+            $('.context-menu').remove();
+        };
     });
 
     // Entry into the directory
@@ -86,10 +91,10 @@ $(document).ready(function () {
         };
     });
 
-    // open menu
-    $(document).on("click", ".menu_img", function() {
-        console.log("The menu is opening...")
-    });
+//     open menu
+//    $(document).on("click", ".menu_img", function() {
+//        console.log("The menu is opening...")
+//    });
 
     // Entry into deletion mode and normal mode
     $(document).on("click", "#delete_mode", function(){
@@ -182,8 +187,8 @@ $(document).ready(function () {
             url: '',
             type: 'post',
             data: {
-               updated_checklist_id: $('h2', '#content').attr('value'),
-                     checklist_name: $('h2', '#content').text(),
+               updated_checklist_id: $('h2', '#content_block').attr('value'),
+                     checklist_name: $('h2', '#content_block').text(),
                      checklist_data: JSON.stringify(data),
                 csrfmiddlewaretoken: csrf,
             },
@@ -228,12 +233,7 @@ $(document).ready(function () {
         $('.active').append('<input type=text id="edit_string_input" class="flex_item">');
         $('.active').append('<div class="flex_end_item" id="save_string_btn">Save</div>');
         $('#edit_string_input').val(label.text()).select();
-//        console.log($('.checkbox_label .active').innerText())
     });
-//    <div class="active">
-//        <input type="checkbox">
-//        <label class="checkbox_label">Проверить разрешение имен dns-сервером</label>
-//    </div>
 
     //saving checkbox string changing
     $(document).on('click', '#save_string_btn', function(){
@@ -250,89 +250,42 @@ $(document).ready(function () {
         $('#editing_div').children().addClass('hide');
     });
 
-//    $('.list').on("contextmenu", function(evt) {evt.preventDefault();});
-//    $(document)bind('contextmenu', function(e) {
-//        return false;
-//    });
-
-//    document.addEventListener( "contextmenu", function(e) {
-//    console.log(e);
-//  });
-
-//    $(document).contextmenu(function(event) {
-//        event.preventDefault();
-//    });
-
-// for deleting.................................
- //adding context menu on directory lists (not tested)
-    $('.list').contextmenu(function(event) {
-        event.preventDefault();
-        // Удаляем предыдущие вызванное контекстное меню:
+ //adding menu on directory lists (not tested)
+    $(document).on('click', '.menu_img', function(event) {
+        console.log("OnClick menu img...");
+        console.log("Event: " + event.target);
+        console.log("Event: " + event.pageX);
+        console.log("Event: " + event.pageY);
         $('.context-menu').remove();
         let move_menu = '';
         if ($('.parent_dir').text() != '/') {
             move_menu += '<li><a href="#" value="' + $('.parent_dir').attr('value') + '">Move one Level Up</a></li>';
         };
-        $(this).siblings().each(function(index, element) {
-            move_menu += '<li><a href="#" value="' + $(element).attr('value') + '">Move to "' + $(element).text() + '"</a></li>';
-        });
-        // Проверяем нажата ли именно правая кнопка мыши:
-        if (event.which === 3)  {
-            // Получаем элемент на котором был совершен клик:
-            var target = $(event.target);
-            // Создаем меню:
-            $('<div/>', {
-                class: 'context-menu' // Присваиваем блоку наш css класс контекстного меню:
-            })
-            .css({
-                left: event.pageX+'px', // Задаем позицию меню на X
-                top: event.pageY+'px' // Задаем позицию меню по Y
-            })
-            .appendTo('body') // Присоединяем наше меню к body документа:
-            .append( // Добавляем пункты меню:
-                 $('<ul/>').append('<li><a href="#">Remove directory</a></li>')
-                           .append('<li><a href="#">Edit name</a></li>')
-                           .append(move_menu)
-                   )
-             .show('fast'); // Показываем меню с небольшим стандартным эффектом jQuery. Как раз очень хорошо подходит для меню
-         }
-    });
-
- //adding context menu on checklist list (not tested)
-    $('.check_list').contextmenu(function(event) {
-        event.preventDefault();
-        // Удаляем предыдущие вызванное контекстное меню:
-        $('.context-menu').remove();
-        let move_menu = '';
-        if ($('.parent_dir').text() != '/') {
-            move_menu += '<li><a href="#" value="' + $('.parent_dir').attr('value') + '">Move one Level Up</a></li>';
+        if ($(this).prev().is($('.directory_name'))) {
+            $(this).parent().siblings().each(function(index, element) {
+                console.log("Printing dir index: " + index);
+                move_menu += '<li><a href="#" value="' + $(element).children('.directory_name').attr('value') + '">Move to "' + $(element).children('.directory_name').text() + '"</a></li>';
+            });
+        }
+        else if ($(this).prev().is($('.checklist_name'))) {
+            $('.directory').each(function(index, element) {
+                console.log("Printing checklist index: " + index);
+                move_menu += '<li><a href="#" value="' + $(element).children('.directory_name').attr('value') + '">Move to "' + $(element).children('.directory_name').text() + '"</a></li>';
+            });
         };
-        $('.list').each(function(index, element) {
-            move_menu += '<li><a href="#" value="' + $(element).attr('value') + '">Move to "' + $(element).text() + '"</a></li>';
-        });
-        // Проверяем нажата ли именно правая кнопка мыши:
-        if (event.which === 3)  {
-            // Получаем элемент на котором был совершен клик:
-            var target = $(event.target);
-            // Создаем меню:
-            $('<div/>', {
+        console.log(event);
+        $('<div/>', {
                 class: 'context-menu' // Присваиваем блоку наш css класс контекстного меню:
             })
-            .css({
-                left: event.pageX+'px', // Задаем позицию меню на X
-                top: event.pageY+'px' // Задаем позицию меню по Y
+            .css({right: $(document).width() - event.target.offsetLeft - event.target.width +'px', // Задаем позицию меню на X
+                   top: event.target.offsetTop + event.target.width+'px' // Задаем позицию меню по Y
             })
             .appendTo('body') // Присоединяем наше меню к body документа:
-            .append( // Добавляем пункты меню:
-                 $('<ul/>').append('<li><a href="#">Remove checklist</a></li>')
-                           .append('<li><a href="#">Edit name</a></li>')
-                           .append(move_menu)
-                   )
-             .show('fast'); // Показываем меню с небольшим стандартным эффектом jQuery. Как раз очень хорошо подходит для меню
-         }
-    });
-
-    $(document).on('click', '.menu_img', function() {
+            .append($('<ul/>').append('<li><a href="#">Edit name</a></li>')
+                              .append(move_menu)
+                              .append('<li><a href="#">Remove</a></li>')
+            )
+            .show('fast'); // Показываем меню с небольшим стандартным эффектом jQuery. Как раз очень хорошо подходит для меню
     });
 
 });
@@ -365,9 +318,9 @@ function load_json_data(response) {
 // response{'id', 'name', 'data'}
 function load_checklist_data(response) {
     let data;
-    $("#content").empty();
+    $("#content_block").empty();
     console.log("Checklist data:" + response);
-    $('#content').append('<h2 value="' + response['id'] + '">' + response['name'] + '</h2>')
+    $('#content_block').append('<h2 value="' + response['id'] + '">' + response['name'] + '</h2>')
                  .append('<div id="checklist_data"></div>');
     if (response['data']) {
         data = JSON.parse(response['data']);
@@ -381,16 +334,16 @@ function load_checklist_data(response) {
             $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="flex_end_item"><label class="checkbox_label flex_item">' + data[key]['text'] + '</label></div>');
         };
     };
-    $('#content').append('<div id="editing_div" class="flex_container">' +
+    $('#content_block').append('<div id="editing_div" class="flex_container">' +
                             '<div id="move_up_btn" class="flex_item button hide">Move Up</div>' +
                             '<div id="move_down_btn" class="flex_item button hide">Move Down</div>' +
                             '<div id="edit_label_btn" class="flex_item button hide">Edit String</div>' +
                             '<div id="delete_label_btn" class="flex_item button hide">Delete String</div>' +
                          '</div>');
-    $('#content').append('<div id="add_string_div" class="flex_container adding"></div>');
+    $('#content_block').append('<div id="add_string_div" class="flex_container adding"></div>');
     $('#add_string_div').append('<input type="text" id="add_string_input" class="flex_item" value="" placeholder="Enter a new string...">');
     $('#add_string_div').append('<div id="add_string_btn" class="flex_end_item button">Add</div>');
-    $('#content').append('<div id="save_checklist_btn" class="button">Save checklist</div>');
+    $('#content_block').append('<div id="save_checklist_btn" class="button">Save checklist</div>');
 };
 
 //actions after successful saving checklist

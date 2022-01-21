@@ -4,7 +4,7 @@
 
 {% block content %}
 {% load static %}
-<div class="flex_container">
+<div class="flex_container main_block">
     {% csrf_token %}
     <div id="list_block" class="child">
     <h3>Your checklist catalog:</h3>
@@ -46,7 +46,7 @@
         </div>
         <div id="delete_mode" class="delete_mode" value="0">Set Delete Mode</div>
     </div>
-    <div id="content" class="child">
+    <div id="content_block" class="child">
     </div>
 </div>
 {% endblock %}
