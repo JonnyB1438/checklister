@@ -52,12 +52,16 @@ h4 { margin: 5px 0 0 0; }
 /* Добавляем стили для списка которые будет находиться внутри меню и, собственно, содержать его пункты: */
 .context-menu ul { list-style: none; margin: 0; padding: 0; }
 
-.context-menu ul li { margin: 0; padding: 0; background-color: #fff; display: block; }
+.context-menu ul li { margin: 0; padding: 0; background-color: #fff; display: block; cursor: pointer; }
 
 /* Стили для ссылок пунктов меню: */
 .context-menu ul li a { color: #333; text-decoration: none; font-size: 12pt; color: #0095ff; display: block; padding: 5px; }
 
 .context-menu ul li a:hover { background-color: #eee; }
+
+.context-menu ul li p { color: #333; text-decoration: none; font-size: 12pt; color: #0095ff; display: block; margin: 0; padding: 5px; }
+
+.context-menu ul li p:hover { background-color: #eee; }
 
 
 .flex_container {
@@ -134,7 +138,7 @@ img.flex_end_item   {
     width: 100%;
     font-size: 20px;
     text-align: center;
-    display: block;
+/*    display: block;*/
 }
 
 .delete_mode, .delete {
