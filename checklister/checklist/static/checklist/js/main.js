@@ -33,10 +33,14 @@ $(document).ready(function () {
         }
         else if (element.hasClass('remove_checklist')) {
             remove_checklist(element.attr('value'))
+        }
+        else if (!$('.editing').is(e.target)) {
+            console.log('We need to finish editing...');
+            console.log('Editing ID:' + $('.editing').attr('id'));
+            end_editing($('.editing').attr('id'));
         };
 
-        let menu_element = $('.menu_img');
-        if (!menu_element.is(e.target)) {
+        if (!$('.menu_img').is(e.target)) {
             $('.context-menu').remove();
         };
     });
@@ -46,7 +50,6 @@ $(document).ready(function () {
         console.log('Click! - ' + $(this).text());
         if ($(this).parent().hasClass('delete')) {}
         else {
-            console.log($(this).attr('value'))
             $.ajax({
                 url: '',
                 type: 'get',
@@ -62,7 +65,6 @@ $(document).ready(function () {
     // Enter into the parent directory
     $(document).on("click", ".parent_dir", function(){
         console.log('Click back! - ' + $(this).text());
-//        console.log($(this).attr('value'))
         $.ajax({
             url: '',
             type: 'get',
@@ -78,8 +80,6 @@ $(document).ready(function () {
     $(document).on("click", "#add_dir", function(){
         console.log('Click adding directory! - ' + $(this).text());
         let dir_name = $("#entered_name").val();
-//        console.log(dir_name);
-//        console.log(csrf);
         if (dir_name) {
             $("#entered_name").val("");
             $.ajax({
@@ -119,7 +119,6 @@ $(document).ready(function () {
     // Entry into deletion mode and normal mode
     $(document).on("click", "#delete_mode", function(){
         console.log('Click Delete Mode!');
-//        console.log($(this).attr('value'));
         if ($(this).attr('value') == '0') {
             $(this).attr('value', '1');
             $(this).text('Set Normal Mode');
@@ -196,7 +195,8 @@ $(document).ready(function () {
             type: 'post',
             data: {
                updated_checklist_id: $('h2', '#content_block').attr('value'),
-                     checklist_name: $('h2', '#content_block').text(),
+//                     checklist_name: $('h2', '#content_block').text(),
+                     checklist_name: "",
                      checklist_data: JSON.stringify(data),
                 csrfmiddlewaretoken: csrf,
             },
@@ -235,7 +235,6 @@ $(document).ready(function () {
     //edit checkbox string
     $(document).on("click", "#edit_label_btn", function(){
         console.log("Edit string...");
-        console.log($('.active .checkbox_label').text());
         let label = $('.active .checkbox_label');
         label.addClass('hide');
         $('.active').append('<input type=text id="edit_string_input" class="flex_item">');
@@ -307,27 +306,90 @@ $(document).ready(function () {
             .show('fast'); // Показываем меню с небольшим стандартным эффектом jQuery. Как раз очень хорошо подходит для меню
     });
 
+    //pressing Enter handler for checklist changed name
+    $(document).keypress(function(e) {
+        if(e.keyCode === 13) {
+            console.log("Enter");
+//            let focus = $(':focus');
+            console.log("ID=" + $(':focus').attr('id'));
+            end_editing($(':focus').attr('id'));
+//
+//            if (focus$(':focus').attr('id') == 'checklist_name_editing') {
+//            }
+        };
+    });
+
 });
+
+//end editing when change cursor focus or press Enter
+function end_editing(id) {
+    if (id == 'checklist_name_editing') {
+        let input = $('#'+id);
+        let label = input.prev();
+        if (input.val()) {
+            label.text(input.val());
+            save_checklist_name(label.attr('value'));
+        }
+        label.removeClass('hide');
+        input.remove()
+    }
+    else if (id == 'directory_name_editing') {
+        let input = $('#'+id);
+        let label = input.prev();
+        if (input.val()) {
+            label.text(input.val());
+            save_directory_name(label.attr('value'));
+        }
+        label.removeClass('hide');
+        input.remove()
+    }
+};
+
+//Save checklist name
+function save_checklist_name(checklist_id) {
+    console.log("Saving checklist name with ID:" + checklist_id);
+    console.log($('.checklist_name[value="' + checklist_id + '"]').text());
+    $.ajax({
+        url: '',
+        type: 'post',
+        data: {
+             updated_checklist_id: checklist_id,
+             checklist_name: $('.checklist_name[value="' + checklist_id + '"]').text(),
+             checklist_data: "",
+             csrfmiddlewaretoken: csrf,
+        },
+        error: function(response) {location.reload();},
+    });
+};
+
+//Save directory name
+function save_directory_name(directory_id) {
+    console.log("Saving directory name with ID:" + directory_id);
+    $.ajax({
+        url: '',
+        type: 'post',
+        data: {
+             updated_directory_id: directory_id,
+             directory_name: $('.directory_name[value="' + directory_id + '"]').text(),
+             csrfmiddlewaretoken: csrf,
+        },
+        error: function(response) {location.reload();},
+    });
+};
 
 // load directory and checklist lists on the from ajax response
 // response{'parent_directory{'id', 'name'}', 'directories{numeric:{'id', 'name'}}', 'checklists{numeric:{'id', 'name'}}'}
 function load_json_data(response) {
     $("#directory_list").empty();
     $("#checklist_list").empty();
-    console.log('Path:' + response['parent_directory']['id'] +
-                '; value: ' + response['parent_directory']['name']);
     $(".parent_dir").html(response['parent_directory']['name'])
                     .attr('value', response['parent_directory']['id']);
     for (let key in response['directories']) {
-        console.log('Directory:' + response['directories'][key]['id'] +
-                    '; value: ' + response['directories'][key]['name']);
         $("#directory_list").append('<div class="directory flex_container"><div class="directory_name flex_item" value="' +
                                     response['directories'][key]['id'] + '">' + response['directories'][key]['name'] +
                                     '</div><img class="menu_img flex_end_item" src="' + menu_image + '"></div>');
     };
     for (let key in response['checklists']) {
-            console.log('Checklist:' + response['checklists'][key]['id'] +
-                        '; value: ' + response['checklists'][key]['name']);
             $("#checklist_list").append('<div class="checklist flex_container"><div class="checklist_name flex_item" value="' + response['checklists'][key]['id'] + '">' +
                                     response['checklists'][key]['name'] + '</div><img class="menu_img flex_end_item" src="' + menu_image + '"></div>');
     };
@@ -338,13 +400,11 @@ function load_json_data(response) {
 function load_checklist_data(response) {
     let data;
     $("#content_block").empty();
-    console.log("Checklist data:" + response);
     $('#content_block').append('<h2 value="' + response['id'] + '">' + response['name'] + '</h2>')
                  .append('<div id="checklist_data"></div>');
     if (response['data']) {
         data = JSON.parse(response['data']);
     };
-    console.log("Data: " + data);
     for (let key in data) {
         if (data[key]['status']) {
             $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="flex_end_item" checked><label class="checkbox_label flex_item">' + data[key]['text'] + '</label></div>');
@@ -372,6 +432,13 @@ function saved_checklist(response) {
 
 function edit_directory_name(directory_id) {
         console.log('Edit directory name with ID=' + directory_id);
+        let element = $('.directory_name[value="' + directory_id + '"]');
+        $(element).addClass('hide');
+        let editor = $('<input/>', { id: 'directory_name_editing',
+                                  class: 'flex_item editing'})
+            .val(element.text());
+        $(element).after(editor);
+        editor.select();
 };
 
 function move_directory_up(directory_id, current_directory_id) {
@@ -381,7 +448,6 @@ function move_directory_up(directory_id, current_directory_id) {
         dict['csrfmiddlewaretoken'] = csrf;
         dict['moving_directory_id'] = directory_id;
         dict['current_directory_id'] = current_directory_id;
-        console.log("Data for sending: " + dict);
         element = $('.directory_name[value="' + directory_id + '"]').parent();
         $.ajax({
             url: '',
@@ -399,7 +465,6 @@ function move_directory_to(directory_id, target_directory_id) {
         dict['csrfmiddlewaretoken'] = csrf;
         dict['moving_directory_id'] = directory_id;
         dict['target_directory_id'] = target_directory_id;
-        console.log("Data for sending: " + dict);
         element = $('.directory_name[value="' + directory_id + '"]').parent();
         $.ajax({
             url: '',
@@ -416,7 +481,6 @@ function remove_directory(directory_id) {
         let element;
         dict['csrfmiddlewaretoken'] = csrf;
         dict['delete_directory_id'] = directory_id;
-        console.log("Data for sending: " + dict);
         element = $('.directory_name[value="' + directory_id + '"]').parent();
         $.ajax({
             url: '',
@@ -429,6 +493,13 @@ function remove_directory(directory_id) {
 
 function edit_checklist_name(checklist_id) {
         console.log('Edit checklist name with ID=' + checklist_id);
+        let element = $('.checklist_name[value="' + checklist_id + '"]');
+        $(element).addClass('hide');
+        let editor = $('<input/>', { id: 'checklist_name_editing',
+                                  class: 'flex_item editing'})
+            .val(element.text());
+        $(element).after(editor);
+        editor.select();
 };
 
 function move_checklist_up(checklist_id, current_directory_id) {
@@ -438,7 +509,6 @@ function move_checklist_up(checklist_id, current_directory_id) {
         dict['csrfmiddlewaretoken'] = csrf;
         dict['moving_checklist_id'] = checklist_id;
         dict['current_directory_id'] = current_directory_id;
-        console.log("Data for sending: " + dict);
         element = $('.checklist_name[value="' + checklist_id + '"]').parent();
         $.ajax({
             url: '',
@@ -456,7 +526,6 @@ function move_checklist_to(checklist_id, target_directory_id) {
         dict['csrfmiddlewaretoken'] = csrf;
         dict['moving_checklist_id'] = checklist_id;
         dict['target_directory_id'] = target_directory_id;
-        console.log("Data for sending: " + dict);
         element = $('.checklist_name[value="' + checklist_id + '"]').parent();
         $.ajax({
             url: '',
@@ -473,7 +542,6 @@ function remove_checklist(checklist_id) {
         let element;
         dict['csrfmiddlewaretoken'] = csrf;
         dict['delete_checklist_id'] = checklist_id;
-        console.log("Data for sending: " + dict);
         element = $('.checklist_name[value="' + checklist_id + '"]').parent();
         $.ajax({
             url: '',

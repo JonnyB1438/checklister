@@ -46,21 +46,27 @@ def get_checklists_by_directory(owner, directory_id: int) -> list:
     return CheckListTemplate.objects.filter(directory=directory).values('id', 'name')
 
 
-def move_directory_into_another_directory(owner, directory_id: int, target_directory_id: int) -> bool:
+def update_directory_data(owner, directory_id: int, directory_name=None, parent_directory_id=None) -> bool:
     """
-    Move directory into another directory with checking of their owner.
+    Change directory(name, parent) with checking of the owner(directory and parent).
 
     :param owner: a user of an auth user type.
-    :param directory_id: a moving directory ID.
-    :param target_directory_id: a target directory ID.
+    :param directory_id: a changing directory ID.
+    :param parent_directory_id: a new parent directory ID.
+    :param directory_name: a new directory name.
     :return: True if everything is OK, else - False
     """
-    if Directory.objects.get(id=target_directory_id, owner=owner):
-        directory = Directory.objects.get(id=directory_id, owner=owner)
-        directory.parent = target_directory_id
+    directory = Directory.objects.get(id=directory_id, owner=owner)
+    if directory_name:
+        directory.name = directory_name
         directory.save()
-        return True
-    return False
+    if parent_directory_id:
+        if Directory.objects.get(id=parent_directory_id, owner=owner):
+            directory.parent = parent_directory_id
+            directory.save()
+        else:
+            return False
+    return True
 
 
 def move_directory_up_from_current_directory(owner, directory_id: int, current_directory_id: int) -> bool:
@@ -73,9 +79,7 @@ def move_directory_up_from_current_directory(owner, directory_id: int, current_d
     :return: True if everything is OK, else - False
     """
     target_directory_id = Directory.objects.get(id=current_directory_id, owner=owner).parent
-    if move_directory_into_another_directory(owner=owner,
-                                             directory_id=directory_id,
-                                             target_directory_id=target_directory_id):
+    if update_directory_data(owner=owner, directory_id=directory_id, parent_directory_id=target_directory_id):
         return True
     return False
 
@@ -342,6 +346,11 @@ def post_handler(request):
                                  name=request.POST["checklist_name"],
                                  data=request.POST["checklist_data"]):
             return JsonResponse({'status': 'Success'}, status=200)
+    elif 'updated_directory_id' in request.POST and request.POST['updated_directory_id'].isdigit():
+        if update_directory_data(owner=request.user,
+                                 directory_id=int(request.POST["updated_directory_id"]),
+                                 directory_name=request.POST["directory_name"]):
+            return JsonResponse({'status': 'Success'}, status=200)
     elif 'moving_directory_id' in request.POST and request.POST['moving_directory_id'].isdigit() \
             and 'current_directory_id' in request.POST and request.POST['current_directory_id'].isdigit():
         if move_directory_up_from_current_directory(owner=request.user,
@@ -349,10 +358,10 @@ def post_handler(request):
                                                     current_directory_id=int(request.POST["current_directory_id"])):
             return JsonResponse({'status': 'Success'}, status=200)
     elif 'moving_directory_id' in request.POST and request.POST['moving_directory_id'].isdigit() \
-         and 'target_directory_id' in request.POST and request.POST['target_directory_id'].isdigit():
-        if move_directory_into_another_directory(owner=request.user,
-                                                 directory_id=int(request.POST["moving_directory_id"]),
-                                                 target_directory_id=int(request.POST["target_directory_id"])):
+            and 'target_directory_id' in request.POST and request.POST['target_directory_id'].isdigit():
+        if update_directory_data(owner=request.user,
+                                 directory_id=int(request.POST["moving_directory_id"]),
+                                 parent_directory_id=int(request.POST["target_directory_id"])):
             return JsonResponse({'status': 'Success'}, status=200)
     elif 'moving_checklist_id' in request.POST and request.POST['moving_checklist_id'].isdigit() \
             and 'current_directory_id' in request.POST and request.POST['current_directory_id'].isdigit():
@@ -366,5 +375,11 @@ def post_handler(request):
                                          checklist_id=int(request.POST["moving_checklist_id"]),
                                          target_directory_id=int(request.POST["target_directory_id"])):
             return JsonResponse({'status': 'Success'}, status=200)
+    # elif 'updated_checklist_id' in request.POST and request.POST['moving_checklist_id'].isdigit() \
+    #         and 'new_checklist_name' in request.POST:
+    #     if change_checklist_name(owner=request.user,
+    #                              checklist_id=int(request.POST["updated_checklist_id"]),
+    #                              new_checklist_name=request.POST["new_checklist_name"]):
+    #         return JsonResponse({'status': 'Success'}, status=200)
     return JsonResponse({'status': 'Success'}, status=200)
     # return JsonResponse({'error': 'Error'}, status=500)
