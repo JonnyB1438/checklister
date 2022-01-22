@@ -1,10 +1,18 @@
-h2 { text-align: center; }
+h2, h3 {
+    text-align: center;
+    word-break: break-word;
+}
 
-h4 { margin: 5px 0 0 0; }
+h4 {
+    margin: 5px 0 0 0;
+    word-break: break-word;
+}
+
+#checklist_path { word-break: break-word;}
 
 .child {
-    border: 2px solid black;
-    border-radius: 5px;
+/*    border: 2px solid black;
+    border-radius: 5px;*/
     margin: 10px;
     padding: 10px;
 }
@@ -30,6 +38,7 @@ h4 { margin: 5px 0 0 0; }
     text-align: left;
     padding-left: 10px;
     display: block;
+    word-break: break-word;
 }
 
 .parent_dir:hover, .button:hover {
@@ -42,7 +51,6 @@ h4 { margin: 5px 0 0 0; }
     display: none; /* Изначально не показываем его */
     background-color: #fff; /* Цвет фона меню */
     border: 1px solid #333; /* Граница */
-
     /* Немного красивостей. Добавляем тень для нашего меню, что бы отобразить его слегка выше остальных элементов страницы: */
     -moz-box-shadow: -5px 2px 10px rgba(0,0,0,0.5); /* Для Firefox */
     -webkit-box-shadow: -5px 2px 10px rgba(0,0,0,0.5); /* Для Safari и Chrome */
@@ -51,16 +59,10 @@ h4 { margin: 5px 0 0 0; }
 
 /* Добавляем стили для списка которые будет находиться внутри меню и, собственно, содержать его пункты: */
 .context-menu ul { list-style: none; margin: 0; padding: 0; }
-
 .context-menu ul li { margin: 0; padding: 0; background-color: #fff; display: block; cursor: pointer; }
-
 /* Стили для ссылок пунктов меню: */
-.context-menu ul li a { color: #333; text-decoration: none; font-size: 12pt; color: #0095ff; display: block; padding: 5px; }
-
-.context-menu ul li a:hover { background-color: #eee; }
-
-.context-menu ul li p { color: #333; text-decoration: none; font-size: 12pt; color: #0095ff; display: block; margin: 0; padding: 5px; }
-
+.context-menu ul li p { color: #333; text-decoration: none; font-size: 12pt;
+                        color: #0095ff; display: block; margin: 0; padding: 5px; }
 .context-menu ul li p:hover { background-color: #eee; }
 
 
@@ -103,6 +105,7 @@ img.flex_end_item   {
 
 .directory_name {
     padding-left: 10px;
+    word-break: break-word;
 }
 
 .directory:hover {
@@ -119,11 +122,11 @@ img.flex_end_item   {
     margin: 10px 0 10px 20px;
     font-size: 20px;
     text-align: left;
-    padding-left: 10px;
 }
 
 .checklist_name {
     padding-left: 10px;
+    word-break: break-word;
 }
 
 .checklist:hover {

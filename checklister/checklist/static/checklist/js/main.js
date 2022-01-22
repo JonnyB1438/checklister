@@ -1,6 +1,8 @@
 var elementListDirectoryClassName = '.directory';
 var menu_image = '/static/checklist/img/menu.webp'
 var csrf;
+var loaded_checklist;
+var path_start = 'Path: ';
 
 $(document).ready(function () {
     csrf = $("input[name=csrfmiddlewaretoken]").val();
@@ -34,7 +36,7 @@ $(document).ready(function () {
         else if (element.hasClass('remove_checklist')) {
             remove_checklist(element.attr('value'))
         }
-        else if (!$('.editing').is(e.target)) {
+        else if ($('.editing').length > 0 && !$('.editing').is(e.target)) {
             console.log('We need to finish editing...');
             console.log('Editing ID:' + $('.editing').attr('id'));
             end_editing($('.editing').attr('id'));
@@ -48,18 +50,15 @@ $(document).ready(function () {
     // Entry into the directory
     $(document).on("click", ".directory_name", function(){
         console.log('Click! - ' + $(this).text());
-        if ($(this).parent().hasClass('delete')) {}
-        else {
-            $.ajax({
-                url: '',
-                type: 'get',
-                data: {
-                    directory_id: $(this).attr('value'),
-                },
-                success: load_json_data,
-                error: function(response) {location.reload();},
-            });
-        };
+        $.ajax({
+            url: '',
+            type: 'get',
+            data: {
+                directory_id: $(this).attr('value'),
+            },
+            success: load_json_data,
+            error: function(response) {location.reload();},
+        });
     });
 
     // Enter into the parent directory
@@ -116,49 +115,13 @@ $(document).ready(function () {
         };
     });
 
-    // Entry into deletion mode and normal mode
-    $(document).on("click", "#delete_mode", function(){
-        console.log('Click Delete Mode!');
-        if ($(this).attr('value') == '0') {
-            $(this).attr('value', '1');
-            $(this).text('Set Normal Mode');
-            $(this).removeClass("delete_mode")
-            $(this).addClass("normal_mode")
-            $(".directory").addClass("delete")
-            $(".checklist").addClass("delete")
-            $(".adding").addClass("hide")
-            $(".parent_dir").addClass("hide")
-            $(".menu_img").addClass("hide")
-        }
-        else {
-            $(this).attr('value', '0');
-            $(this).text('Set Delete Mode');
-            $(this).removeClass("normal_mode")
-            $(this).addClass("delete_mode")
-            $(".directory").removeClass("delete")
-            $(".checklist").removeClass("delete")
-            $(".adding").removeClass("hide")
-            $(".parent_dir").removeClass("hide")
-            $(".menu_img").removeClass("hide")
-        };
-    });
-
-    // Deletion directory or checklist
-    $(document).on("click", ".delete", function(){
-        console.log("We will delete" + $(this).attr('innerHtml'));
-        if ($(this).hasClass('checklist')){
-            remove_checklist($(this).children('.checklist_name').attr('value'));
-        }
-        else if ($(this).hasClass('directory')){
-            remove_directory($(this).children('.directory_name').attr('value'));
-        };
-    });
-
     //loading checklist information
     $(document).on("click", ".checklist_name", function(){
-        if ($(this).parent().hasClass('delete')) {}
-        else {
         console.log("Choosen checklist ID:" + $(this).attr('value'));
+        if (loaded_checklist && !(loaded_checklist == $('#content')[0].innerHTML)) {
+            console.log('We needed to save current checklist!');
+            save_checklist_data();
+        };
         $.ajax({
             url: '',
             type: 'get',
@@ -168,53 +131,24 @@ $(document).ready(function () {
             success: load_checklist_data,
             error: function(response) {location.reload();},
         });
-        };
     });
 
     //add checklist string on web-form
     $(document).on("click", "#add_string_btn", function(){
         console.log("Adding string...");
-        let new_string = $("#add_string_input").val();
-        if (new_string) {
-            console.log(new_string);
-            $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="flex_end_item"><label class="checkbox_label flex_item">' + new_string + '</label></div>');
-            $("#add_string_input").val('');
-        }
-    });
-
-    //save checklist
-    $(document).on("click", "#save_checklist_btn", function(){
-        console.log("Starting checklist saving...");
-        let data = {}
-        $("#checklist_data").children().each(function(index, element){
-            data[index] = {'text': $('label', element).text(),
-                         'status': $('input', element).is(':checked')};
-        });
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: {
-               updated_checklist_id: $('h2', '#content_block').attr('value'),
-//                     checklist_name: $('h2', '#content_block').text(),
-                     checklist_name: "",
-                     checklist_data: JSON.stringify(data),
-                csrfmiddlewaretoken: csrf,
-            },
-            success: saved_checklist,
-            error: function(response) {location.reload();},
-        });
+        add_checklist_string();
     });
 
     //choosing checklist string
     $(document).on("click", ".checkbox_label", function(){
         if ($(this).parent().hasClass('active')) {
             $(this).parent().removeClass('active');
-            $('#editing_div').children().addClass('hide');
+            $('#editing_div').addClass('hide');
         }
         else {
             $("#checklist_data").children().removeClass('active');
             $(this).parent().addClass('active');
-            $('#editing_div').children().removeClass('hide');
+            $('#editing_div').removeClass('hide');
         };
     });
 
@@ -237,9 +171,12 @@ $(document).ready(function () {
         console.log("Edit string...");
         let label = $('.active .checkbox_label');
         label.addClass('hide');
-        $('.active').append('<input type=text id="edit_string_input" class="flex_item">');
-        $('.active').append('<div class="flex_end_item" id="save_string_btn">Save</div>');
-        $('#edit_string_input').val(label.text()).select();
+        let editor = $('<input/>', { id: 'edit_string_input',
+                                  class: 'flex_item editing',
+                                   type: 'text'})
+            .val(label.text());
+        $(label).after(editor);
+        editor.select();
     });
 
     //saving checkbox string changing
@@ -307,59 +244,119 @@ $(document).ready(function () {
     });
 
     //pressing Enter handler for checklist changed name
-    $(document).keypress(function(e) {
-        if(e.keyCode === 13) {
+    $(document).keyup(function(e) {
+        if(e.key == "Enter") {
             console.log("Enter");
-//            let focus = $(':focus');
             console.log("ID=" + $(':focus').attr('id'));
             end_editing($(':focus').attr('id'));
-//
-//            if (focus$(':focus').attr('id') == 'checklist_name_editing') {
-//            }
+        }
+        else if(e.key == "Escape") {
+            console.log("Enter");
+            console.log("ID=" + $(':focus').attr('id'));
+            end_editing($(':focus').attr('id'), false);
         };
+    });
+
+    //add or remove checkbox 'checked' parameter in html
+    $(document).on('click', 'input[type="checkbox"]', function() {
+	    if ($(this).is(':checked')){
+	        $(this).attr('checked', 'checked');
+	    }
+	    else {
+	        $(this).removeAttr('checked');
+	    };
+    });
+
+    $(window).bind("beforeunload", function() {
+        if (loaded_checklist && !(loaded_checklist == $('#content')[0].innerHTML)) {
+            console.log('We needed to save current checklist!');
+            save_checklist_data();
+        };
+//        return confirm("Do you really want to close?")
     });
 
 });
 
 //end editing when change cursor focus or press Enter
-function end_editing(id) {
+function end_editing(id, status=true) {
     if (id == 'checklist_name_editing') {
         let input = $('#'+id);
         let label = input.prev();
-        if (input.val()) {
+        if (status && input.val() && (input.val() != label.text())) {
             label.text(input.val());
-            save_checklist_name(label.attr('value'));
-        }
+            let checklist_id = label.attr('value');
+            save_checklist(checklist_id, label.text(), "");
+            if (checklist_id == $('h2', '#content').attr('value')) {
+                $('h2', '#content').text(label.text());
+            };
+        };
         label.removeClass('hide');
-        input.remove()
+        input.remove();
     }
     else if (id == 'directory_name_editing') {
         let input = $('#'+id);
         let label = input.prev();
-        if (input.val()) {
+        if (status && input.val() && (input.val() != label.text())) {
+            directory_path = path_start + $('.parent_dir').text() + label.text() + '/';
+            new_directory_path = path_start + $('.parent_dir').text() + input.val() + '/';
+            checklist_path = $('#checklist_path').text();
+            new_checklist_path = checklist_path.replace(directory_path, new_directory_path);
             label.text(input.val());
             save_directory_name(label.attr('value'));
+            if (checklist_path.indexOf(directory_path) == 0) {
+                $('#checklist_path').text(new_checklist_path);
+            };
         }
         label.removeClass('hide');
         input.remove()
     }
+    else if (id == 'edit_string_input') {
+        let input = $('#'+id);
+        let label = input.prev();
+        if (status && input.val()) {
+            label.text(input.val());
+        }
+        label.removeClass('hide');
+        input.remove()
+    }
+    else if (id == 'add_string_input') {
+        add_checklist_string();
+    }
 };
 
-//Save checklist name
-function save_checklist_name(checklist_id) {
-    console.log("Saving checklist name with ID:" + checklist_id);
-    console.log($('.checklist_name[value="' + checklist_id + '"]').text());
+//add checklist string
+function add_checklist_string() {
+    let new_string = $("#add_string_input").val();
+    if (new_string) {
+        console.log(new_string);
+        $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="flex_end_item"><label class="checkbox_label flex_item">' + new_string + '</label></div>');
+        $("#add_string_input").val('');
+    }
+};
+
+//Save checklist
+function save_checklist(checklist_id, checklist_name, checklist_data) {
+    console.log("Saving checklist with ID:" + checklist_id);
     $.ajax({
         url: '',
         type: 'post',
         data: {
              updated_checklist_id: checklist_id,
-             checklist_name: $('.checklist_name[value="' + checklist_id + '"]').text(),
-             checklist_data: "",
+             checklist_name: checklist_name,
+             checklist_data: checklist_data,
              csrfmiddlewaretoken: csrf,
         },
         error: function(response) {location.reload();},
     });
+};
+
+function save_checklist_data() {
+        let data = {}
+        $("#checklist_data").children().each(function(index, element){
+            data[index] = {'text': $('label', element).text(),
+                         'status': $('input', element).is(':checked')};
+        });
+        save_checklist($('h2', '#content').attr('value'), "", JSON.stringify(data))
 };
 
 //Save directory name
@@ -399,8 +396,10 @@ function load_json_data(response) {
 // response{'id', 'name', 'data'}
 function load_checklist_data(response) {
     let data;
-    $("#content_block").empty();
-    $('#content_block').append('<h2 value="' + response['id'] + '">' + response['name'] + '</h2>')
+    $("#content").empty();
+    $('#content').append('<p id="checklist_path">' + path_start + $('.parent_dir').text() + '</p>');
+//    $('#content').append('<p id="checklist_path"></p>');
+    $('#content').append('<h2 value="' + response['id'] + '">' + response['name'] + '</h2>')
                  .append('<div id="checklist_data"></div>');
     if (response['data']) {
         data = JSON.parse(response['data']);
@@ -413,16 +412,10 @@ function load_checklist_data(response) {
             $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="flex_end_item"><label class="checkbox_label flex_item">' + data[key]['text'] + '</label></div>');
         };
     };
-    $('#content_block').append('<div id="editing_div" class="flex_container">' +
-                            '<div id="move_up_btn" class="flex_item button hide">Move Up</div>' +
-                            '<div id="move_down_btn" class="flex_item button hide">Move Down</div>' +
-                            '<div id="edit_label_btn" class="flex_item button hide">Edit String</div>' +
-                            '<div id="delete_label_btn" class="flex_item button hide">Delete String</div>' +
-                         '</div>');
-    $('#content_block').append('<div id="add_string_div" class="flex_container adding"></div>');
-    $('#add_string_div').append('<input type="text" id="add_string_input" class="flex_item" value="" placeholder="Enter a new string...">');
-    $('#add_string_div').append('<div id="add_string_btn" class="flex_end_item button">Add</div>');
-    $('#content_block').append('<div id="save_checklist_btn" class="button">Save checklist</div>');
+    $('#editing_div').addClass('hide');
+    $('#add_string_div').removeClass('hide');
+//    $('#save_checklist_btn').removeClass('hide');
+    loaded_checklist = $('#content')[0].innerHTML;
 };
 
 //actions after successful saving checklist
@@ -453,7 +446,15 @@ function move_directory_up(directory_id, current_directory_id) {
             url: '',
             type: 'post',
             data: dict,
-            success: element.fadeOut(),
+            success: function() {
+                element.fadeOut();
+                directory_path = path_start + $('.parent_dir').text() +
+                                            $('.directory_name[value="' + directory_id + '"]').text() + '/';
+                console.log('Path = ' + directory_path);
+                if ($('#checklist_path').text().indexOf(directory_path) == 0) {
+                    clear_checklist_data();
+                };
+            },
             error: function(response) {location.reload();},
         });
 };
@@ -470,25 +471,44 @@ function move_directory_to(directory_id, target_directory_id) {
             url: '',
             type: 'post',
             data: dict,
-            success: element.fadeOut(),
+            success: function() {
+                element.fadeOut();
+                directory_path = path_start + $('.parent_dir').text() +
+                                            $('.directory_name[value="' + directory_id + '"]').text() + '/';
+                console.log('Path = ' + directory_path);
+                if ($('#checklist_path').text().indexOf(directory_path) == 0) {
+                    clear_checklist_data();
+                };
+            },
             error: function(response) {location.reload();},
         });
 };
 
 function remove_directory(directory_id) {
         console.log('Remove directory with ID=' + directory_id);
-        let dict = {};
-        let element;
-        dict['csrfmiddlewaretoken'] = csrf;
-        dict['delete_directory_id'] = directory_id;
-        element = $('.directory_name[value="' + directory_id + '"]').parent();
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: dict,
-            success: element.fadeOut(),
-            error: function(response) {location.reload();},
-        });
+        let directory_name = $('.directory_name[value="' + directory_id + '"]').text();
+        if (confirm('Are you sure you want to delete the directory("' + directory_name + '") with all its contents?')) {
+            let dict = {};
+            let element;
+            dict['csrfmiddlewaretoken'] = csrf;
+            dict['delete_directory_id'] = directory_id;
+            element = $('.directory_name[value="' + directory_id + '"]').parent();
+            $.ajax({
+                url: '',
+                type: 'post',
+                data: dict,
+                success: function() {
+                    element.fadeOut();
+                    directory_path = path_start + $('.parent_dir').text() +
+                                            $('.directory_name[value="' + directory_id + '"]').text() + '/';
+                    console.log('Path = ' + directory_path);
+                    if ($('#checklist_path').text().indexOf(directory_path) == 0) {
+                        clear_checklist_data();
+                    };
+                },
+                error: function(response) {location.reload();},
+            });
+        };
 };
 
 function edit_checklist_name(checklist_id) {
@@ -510,6 +530,12 @@ function move_checklist_up(checklist_id, current_directory_id) {
         dict['moving_checklist_id'] = checklist_id;
         dict['current_directory_id'] = current_directory_id;
         element = $('.checklist_name[value="' + checklist_id + '"]').parent();
+        if (checklist_id == $('h2', '#content').attr('value')) {
+            let path = $('#checklist_path').text();
+            path = path.slice(0, -1);
+            path = path.slice(0, path.lastIndexOf('/') + 1);
+            $('#checklist_path').text(path);
+        };
         $.ajax({
             url: '',
             type: 'post',
@@ -527,6 +553,9 @@ function move_checklist_to(checklist_id, target_directory_id) {
         dict['moving_checklist_id'] = checklist_id;
         dict['target_directory_id'] = target_directory_id;
         element = $('.checklist_name[value="' + checklist_id + '"]').parent();
+        if (checklist_id == $('h2', '#content').attr('value')) {
+            $('#checklist_path').append($('.directory_name[value="' + target_directory_id + '"').text() + '/');
+        };
         $.ajax({
             url: '',
             type: 'post',
@@ -538,6 +567,8 @@ function move_checklist_to(checklist_id, target_directory_id) {
 
 function remove_checklist(checklist_id) {
         console.log('Remove checklist with ID=' + checklist_id);
+        let checklist_name = $('.checklist_name[value="' + checklist_id + '"]').text();
+        if (confirm('Are you sure you want to delete the checklist("' + checklist_name + '")?')) {
         let dict = {};
         let element;
         dict['csrfmiddlewaretoken'] = csrf;
@@ -547,7 +578,20 @@ function remove_checklist(checklist_id) {
             url: '',
             type: 'post',
             data: dict,
-            success: element.fadeOut(),
+            success: function() {
+                element.fadeOut();
+                if (checklist_id == $('h2', '#content').attr('value')) {
+                    clear_checklist_data();
+                };
+            },
             error: function(response) {location.reload();},
         });
+        };
+};
+
+// clear loaded checklist data from DOM
+function clear_checklist_data() {
+    $('#content').empty();
+    $('#editing_div').addClass('hide');
+    $('#add_string_div').addClass('hide');
 };
