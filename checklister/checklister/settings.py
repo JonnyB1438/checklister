@@ -32,6 +32,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # 'checklist.app.ChecklistConfig'
+    'checklist',
+    'users',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,8 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # 'checklist.app.ChecklistConfig'
-    'checklist'
 ]
 
 MIDDLEWARE = [
@@ -135,3 +137,7 @@ STATICFILES_DIR = []
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = "/auth/login/"
+LOGIN_REDIRECT_URL = "checklist"
+# LOGOUT_REDIRECT_URL = "checklist"
