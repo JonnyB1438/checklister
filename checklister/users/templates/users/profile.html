@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Sing Up
+Profile
 {% endblock %}
 
 
@@ -10,19 +10,10 @@ Sing Up
 <div class="row justify-content-center">
     <div class="col-md-8 p-5">
         <div class="card">
-            <div class="card-header">Зарегистрироваться</div>
+            <div class="card-header">My profile</div>
             <div class="card-body">
-
-                    {% for error in form.errors %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error }}
-                        </div>
-                    {% endfor %}
-
-
-                <form method="post" action="{% url 'signup' %}">
+                <form method="post" action="{% url 'profile' %}">
                     {% csrf_token %}
-
                     {% for field in form %}
                         <div class="form-group row" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
                                 <label for="{{ field.id_for_label }}" class="col-md-4 col-form-label text-md-right">{{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}</label>
@@ -34,10 +25,16 @@ Sing Up
                                 </div>
                         </div>
                     {% endfor %}
+                        <div class="form-group row" aria-required="false">
+                            <label class="col-md-4 col-form-label text-md-right">Password</label>
+                            <div class="col-md-6">
+                                <a class="p-2" href="{% url 'password_change' %}">Go to change password</a>
+                            </div>
+                        </div>
 
                     <div class="col-md-6 offset-md-4">
                             <button type="submit" class="btn btn-primary">
-                                Зарегистрироваться
+                                Save the profile
                             </button>
                     </div>
                 </form>
@@ -45,9 +42,4 @@ Sing Up
         </div> <!-- card -->
     </div> <!-- col -->
 </div> <!-- row -->
-<!--<form action="{% url 'signup' %}">-->
-<!--    {% csrf_token %}-->
-<!--    {{ form.as_ul }}-->
-<!--    <input type="submit" value="Sing Up">-->
-<!--</form>-->
 {% endblock %}

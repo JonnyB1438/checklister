@@ -25,7 +25,7 @@ def index(request):
             root_directory = get_root_directory(owner=request.user)
             content = get_json_directory_content(owner=request.user, directory_id=root_directory["id"])
             return render(request, 'checklist/checklist.html', {'content': content})
-    return render(request, 'checklist/checklist.html')  # TODO change to redirection on a login page
+    return render(request, 'checklist/index.html')  # TODO change to redirection on a login page
 
 
 # class AjaxHandlerView(View):

@@ -1,35 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Войти{% endblock %}
+{% block title %}Sign in{% endblock %}
 {% block content %}
 {% load user_filters %}
 
 <div class="row justify-content-center">
   <div class="col-md-8 p-5">
     <div class="card">
-      <div class="card-header">Войти на сайт</div>
+      <div class="card-header">Sign in</div>
       <div class="card-body">
         {% if form.errors %}
         <div class="alert alert-danger" role="alert">
-          Имя пользователя и пароль не совпадают. Введите правильные данные.
+            The username and password do not match. Please enter correct details.
         </div>
         {% endif %}
 
         <div class="alert alert-info" role="alert">
-          Пожалуйста, авторизуйтесь.
+          Please login.
         </div>
 
         <form method="post" action="{% url 'login' %}">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ next }}">
           <div class="form-group row">
-              <label for="{{ form.username.id_for_label }}" class="col-md-4 col-form-label text-md-right">Имя пользователя</label>
+              <label for="{{ form.username.id_for_label }}" class="col-md-4 col-form-label text-md-right">User name</label>
               <div class="col-md-6">
                   {{ form.username|addclass:"form-control" }}
               </div>
           </div>
 
           <div class="form-group row">
-              <label for="{{ form.password.id_for_label }}" class="col-md-4 col-form-label text-md-right">Пароль</label>
+              <label for="{{ form.password.id_for_label }}" class="col-md-4 col-form-label text-md-right">Password</label>
               <div class="col-md-6">
                   {{ form.password|addclass:"form-control" }}
               </div>
@@ -37,10 +37,10 @@
 
           <div class="col-md-6 offset-md-4">
               <button type="submit" class="btn btn-primary">
-                Войти
+                Sign in
               </button>
               <a href="{% url 'password_reset' %}" class="btn btn-link">
-                Забыли пароль?
+                Forgot your password?
               </a>
           </div>
         </form>
