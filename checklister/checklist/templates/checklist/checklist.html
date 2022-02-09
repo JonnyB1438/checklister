@@ -7,14 +7,14 @@
 <div class="flex_container main_block">
     {% csrf_token %}
     <div id="list_block" class="child">
-    <h3>Your checklist catalog</h3>
-    <h4>The full path:</h4>
+    <h3 class="h3check">Your checklist catalog</h3>
+    <h4 class="h4check">The full path:</h4>
     {% if content.parent_directory %}
         <div class="parent_dir" value="{{ content.parent_directory.id }}">{{ content.parent_directory.name }}</div>
     {% else %}
         <div class="parent_dir" value=""> </div>
     {% endif %}
-    <h4>Directories:</h4>
+    <h4 class="h4check">Directories:</h4>
         <div id="directory_list">
             {% if content.directories %}
                 {% for directory in content.directories.values %}
@@ -26,7 +26,7 @@
             {% endif %}
         </div>
         <hr>
-        <h4>Checklists:</h4>
+        <h4 class="h4check">Checklists:</h4>
         <div id="checklist_list">
             {% if content.checklists %}
                 {% for checklist in content.checklists.values %}
@@ -49,10 +49,10 @@
     <div id="content_block" class="child">
         <div id="content"></div>
         <div id="editing_div" class="flex_container hide">
-            <div id="move_up_btn" class="flex_item button">Move Up</div>
-            <div id="move_down_btn" class="flex_item button">Move Down</div>
-            <div id="edit_label_btn" class="flex_item button">Edit String</div>
-            <div id="delete_label_btn" class="flex_item button">Delete String</div>
+            <div id="move_up_btn" class="flex_item button">Up</div>
+            <div id="move_down_btn" class="flex_item button">Down</div>
+            <div id="edit_label_btn" class="flex_item button">Edit</div>
+            <div id="delete_label_btn" class="flex_item button">Delete</div>
         </div>
         <div id="add_string_div" class="flex_container adding hide">
             <input type="text" id="add_string_input" class="flex_item" value="" placeholder="Enter a new string...">

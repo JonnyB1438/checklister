@@ -1,9 +1,17 @@
-h2, h3 {
+.h2check {
+    font-size: 1.5rem;
     text-align: center;
     word-break: break-word;
 }
 
-h4 {
+.h3check {
+    font-size: 1.2rem;
+    text-align: center;
+    word-break: break-word;
+}
+
+.h4check {
+    font-size: 1rem;
     margin: 5px 0 0 0;
     word-break: break-word;
 }
@@ -172,7 +180,7 @@ img.flex_end_item   {
     user-select: none;
     text-align: center;
     font-size: 14pt;
-    font-weight: bold;
+    font-weight: 600;
     background-color: #baffba;
 }
 
@@ -193,11 +201,15 @@ img.flex_end_item   {
     border-radius: 5px;
 }
 
-checkbox_label {
+.checkbox {
+    margin: 3px 3px 3px 4px;
+}
+.checkbox_label {
     cursor: pointer;
     user-select: none;
     box-sizing: border-box;
     word-break: break-word;
+    margin: 0;
 }
 
 #save_string_btn {

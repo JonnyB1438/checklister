@@ -37,7 +37,6 @@ $(document).ready(function () {
             remove_checklist(element.attr('value'))
         }
         else if ($('.editing').length > 0 && !$('.editing').is(e.target)) {
-            console.log('We need to finish editing...');
             console.log('Editing ID:' + $('.editing').attr('id'));
             end_editing($('.editing').attr('id'));
         };
@@ -61,7 +60,7 @@ $(document).ready(function () {
         });
     });
 
-    // Enter into the parent directory
+    // Entry into the parent directory
     $(document).on("click", ".parent_dir", function(){
         console.log('Click back! - ' + $(this).text());
         $.ajax({
@@ -329,7 +328,7 @@ function add_checklist_string() {
     let new_string = $("#add_string_input").val();
     if (new_string) {
         console.log(new_string);
-        $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="flex_end_item"><label class="checkbox_label flex_item">' + new_string + '</label></div>');
+        $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="checkbox flex_end_item"><label class="checkbox_label flex_item">' + new_string + '</label></div>');
         $("#add_string_input").val('');
     }
 };
@@ -399,17 +398,17 @@ function load_checklist_data(response) {
     $("#content").empty();
     $('#content').append('<p id="checklist_path">' + path_start + $('.parent_dir').text() + '</p>');
 //    $('#content').append('<p id="checklist_path"></p>');
-    $('#content').append('<h2 value="' + response['id'] + '">' + response['name'] + '</h2>')
+    $('#content').append('<h2 class="h2check" value="' + response['id'] + '">' + response['name'] + '</h2>')
                  .append('<div id="checklist_data"></div>');
     if (response['data']) {
         data = JSON.parse(response['data']);
     };
     for (let key in data) {
         if (data[key]['status']) {
-            $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="flex_end_item" checked><label class="checkbox_label flex_item">' + data[key]['text'] + '</label></div>');
+            $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="checkbox flex_end_item" checked><label class="checkbox_label flex_item">' + data[key]['text'] + '</label></div>');
         }
         else {
-            $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="flex_end_item"><label class="checkbox_label flex_item">' + data[key]['text'] + '</label></div>');
+            $('#checklist_data').append('<div class="flex_container"><input type="checkbox" class="checkbox flex_end_item"><label class="checkbox_label flex_item">' + data[key]['text'] + '</label></div>');
         };
     };
     $('#editing_div').addClass('hide');
