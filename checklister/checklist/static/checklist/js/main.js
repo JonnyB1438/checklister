@@ -1,5 +1,5 @@
 var elementListDirectoryClassName = '.directory';
-var menu_image = '/static/checklist/img/menu.webp'
+var menu_image = '/static/checklist/img/menu.png'
 var csrf;
 var loaded_checklist;
 var path_start = 'Path: ';
@@ -61,13 +61,13 @@ $(document).ready(function () {
     });
 
     // Entry into the parent directory
-    $(document).on("click", ".parent_dir", function(){
-        console.log('Click back! - ' + $(this).text());
+    $(document).on("click", ".parent_directory", function(){
+        console.log('Click back! - ' + $(this).children('.parent_dir').text());
         $.ajax({
             url: '',
             type: 'get',
             data: {
-                parent_id: $(this).attr('value'),
+                parent_id: $(this).children('.parent_dir').attr('value'),
             },
             success: load_json_data,
             error: function(response) {location.reload();},

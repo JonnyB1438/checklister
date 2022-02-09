@@ -10,7 +10,10 @@
     <h3 class="h3check">Your checklist catalog</h3>
     <h4 class="h4check">Current directory:</h4>
     {% if content.parent_directory %}
-        <div class="parent_dir" value="{{ content.parent_directory.id }}">{{ content.parent_directory.name }}</div>
+        <div class="parent_directory flex_container">
+            <div class="parent_dir flex_item" value="{{ content.parent_directory.id }}">{{ content.parent_directory.name }}</div>
+            <img class="menu_img flex_end_item" src="{% static 'checklist/img/back.png' %}">
+        </div>
     {% else %}
         <div class="parent_dir" value=""> </div>
     {% endif %}
@@ -20,7 +23,7 @@
                 {% for directory in content.directories.values %}
                     <div class="directory flex_container">
                         <div class="directory_name flex_item" value="{{ directory.id }}">{{ directory.name }}</div>
-                        <img class="menu_img flex_end_item" src="{% static 'checklist/img/menu.webp' %}">
+                        <img class="menu_img flex_end_item" src="{% static 'checklist/img/menu.png' %}">
                     </div>
                 {% endfor %}
             {% endif %}
@@ -34,7 +37,7 @@
                         <div class="checklist_name flex_item" value="{{ checklist.id }}">
                             <a href="#content">{{ checklist.name }}</a>
                         </div>
-                        <img class="menu_img flex_end_item" src="{% static 'checklist/img/menu.webp' %}">
+                        <img class="menu_img flex_end_item" src="{% static 'checklist/img/menu.png' %}">
                     </div>
                 {% endfor %}
             {% endif %}
