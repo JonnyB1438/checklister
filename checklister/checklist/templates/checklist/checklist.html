@@ -8,7 +8,7 @@
     {% csrf_token %}
     <div id="list_block" class="child">
     <h3 class="h3check">Your checklist catalog</h3>
-    <h4 class="h4check">The full path:</h4>
+    <h4 class="h4check">Current directory:</h4>
     {% if content.parent_directory %}
         <div class="parent_dir" value="{{ content.parent_directory.id }}">{{ content.parent_directory.name }}</div>
     {% else %}
@@ -31,7 +31,9 @@
             {% if content.checklists %}
                 {% for checklist in content.checklists.values %}
                     <div class="checklist flex_container">
-                        <div class="checklist_name flex_item" value="{{ checklist.id }}">{{ checklist.name }}</div>
+                        <div class="checklist_name flex_item" value="{{ checklist.id }}">
+                            <a href="#content">{{ checklist.name }}</a>
+                        </div>
                         <img class="menu_img flex_end_item" src="{% static 'checklist/img/menu.webp' %}">
                     </div>
                 {% endfor %}

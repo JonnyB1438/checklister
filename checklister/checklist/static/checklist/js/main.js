@@ -282,9 +282,9 @@ function end_editing(id, status=true) {
         let input = $('#'+id);
         let label = input.prev();
         if (status && input.val() && (input.val() != label.text())) {
-            label.text(input.val());
+            label.children('a').text(input.val());
             let checklist_id = label.attr('value');
-            save_checklist(checklist_id, label.text(), "");
+            save_checklist(checklist_id, label.children('a').text(), "");
             if (checklist_id == $('h2', '#content').attr('value')) {
                 $('h2', '#content').text(label.text());
             };
@@ -387,7 +387,7 @@ function load_json_data(response) {
     };
     for (let key in response['checklists']) {
             $("#checklist_list").append('<div class="checklist flex_container"><div class="checklist_name flex_item" value="' + response['checklists'][key]['id'] + '">' +
-                                    response['checklists'][key]['name'] + '</div><img class="menu_img flex_end_item" src="' + menu_image + '"></div>');
+                                    '<a href="#content">' + response['checklists'][key]['name'] + '</a></div><img class="menu_img flex_end_item" src="' + menu_image + '"></div>');
     };
 };
 
@@ -516,7 +516,7 @@ function edit_checklist_name(checklist_id) {
         $(element).addClass('hide');
         let editor = $('<input/>', { id: 'checklist_name_editing',
                                   class: 'flex_item editing'})
-            .val(element.text());
+            .val(element.children('a').text());
         $(element).after(editor);
         editor.select();
 };
