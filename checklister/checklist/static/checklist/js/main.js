@@ -441,6 +441,7 @@ function load_json_data(response) {
 // response{'id', 'name', 'data'}
 function load_checklist_data(response) {
     let data;
+    $('#content_block').css({'min-height': '85vh',});
     $(idChecklistContentBlock).empty();
     $(idChecklistContentBlock).append($('<p>', {id: idChecklistPathLabel.slice(1)})
                                     .append(path_start + $(classParentDirectoryLabel).text()));
