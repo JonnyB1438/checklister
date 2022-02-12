@@ -258,6 +258,17 @@ img.flex_end_item   {
     display: none;
 }
 
+.tree_icons {
+    width: 24px;
+    height: 24px;
+}
+
+.button_icons{
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+}
+
 @media all and (orientation:portrait) {
     /* стили для портрета */
 .main_block {

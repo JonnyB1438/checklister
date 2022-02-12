@@ -7,8 +7,8 @@
 <div class="flex_container main_block">
     {% csrf_token %}
     <div id="list_block" class="child">
-    <h3 class="h3check">Your checklist catalog</h3>
-    <h4 class="h4check">Current directory:</h4>
+<!--    <h3 class="h3check">Your checklist catalog</h3>-->
+<!--    <h4 class="h4check">Current directory:</h4>-->
     {% if content.parent_directory %}
         <div class="parent_directory flex_container">
             <div class="parent_dir flex_item" value="{{ content.parent_directory.id }}">{{ content.parent_directory.name }}</div>
@@ -17,7 +17,8 @@
     {% else %}
         <div class="parent_dir" value=""> </div>
     {% endif %}
-    <h4 class="h4check">Directories:</h4>
+<!--    <h4 class="h4check">Directories:</h4>-->
+        <img src="{% static 'checklist/img/directories.png' %}" class="tree_icons" alt="Directories:" height="24" width="24">
         <div id="directory_list">
             {% if content.directories %}
                 {% for directory in content.directories.values %}
@@ -29,7 +30,8 @@
             {% endif %}
         </div>
         <hr>
-        <h4 class="h4check">Checklists:</h4>
+<!--        <h4 class="h4check">Checklists:</h4>-->
+        <img src="{% static 'checklist/img/checklists.png' %}" class="tree_icons" alt="Checklists:" height="24" width="24">
         <div id="checklist_list">
             {% if content.checklists %}
                 {% for checklist in content.checklists.values %}
@@ -45,8 +47,14 @@
         <div class="adding">
             <input type="text" id="entered_name" name="dir_name" value="" placeholder="Enter a directory or checklist name for adding...">
             <div class="flex_container">
-                <div id="add_dir" class="button flex_item">Add directory</div>
-                <div id="add_checklist" class="button flex_item">Add checklist</div>
+                <div id="add_dir" class="button flex_item">
+                    Add
+                    <img src="{% static 'checklist/img/directories.png' %}" class="button_icons" alt="directory">
+                </div>
+                <div id="add_checklist" class="button flex_item">
+                    Add
+                    <img src="{% static 'checklist/img/checklists.png' %}" class="button_icons" alt="checklist">
+                </div>
             </div>
         </div>
         <div id="delete_mode" class="delete_mode hide" value="0">Set Delete Mode</div>
@@ -54,10 +62,18 @@
     <div id="content_block" class="child">
         <div id="content"></div>
         <div id="editing_div" class="flex_container hide">
-            <div id="move_up_btn" class="flex_item button">Up</div>
-            <div id="move_down_btn" class="flex_item button">Down</div>
-            <div id="edit_label_btn" class="flex_item button">Edit</div>
-            <div id="delete_label_btn" class="flex_item button">Delete</div>
+            <div id="move_up_btn" class="flex_item button">
+                <img src="{% static 'checklist/img/up.png' %}" alt="Up" class="button_icons">
+            </div>
+            <div id="move_down_btn" class="flex_item button">
+                <img src="{% static 'checklist/img/down.png' %}" alt="Down" class="button_icons">
+            </div>
+            <div id="edit_label_btn" class="flex_item button">
+                <img src="{% static 'checklist/img/edit.png' %}" alt="Edit" class="button_icons">
+            </div>
+            <div id="delete_label_btn" class="flex_item button">
+                <img src="{% static 'checklist/img/trash.png' %}" alt="Delete" class="button_icons">
+            </div>
         </div>
         <div id="add_string_div" class="flex_container adding hide">
             <input type="text" id="add_string_input" class="flex_item" value="" placeholder="Enter a new string...">
