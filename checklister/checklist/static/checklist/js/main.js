@@ -31,6 +31,7 @@ var idEnteredNameInput = '#entered_name';
 var idAddNewCheckboxBlock = '#add_string_div';
 var idAddNewCheckboxButton = '#add_string_btn';
 var idAddNewCheckboxInput = '#add_string_input';
+var idContentBlock = '#content_block';
 var idChecklistContentBlock = '#content';
 var idChecklistData = '#checklist_data';
 var idCheckboxEditorBlock = '#editing_div';
@@ -169,6 +170,7 @@ $(document).ready(function () {
     //add checklist string on web-form
     $(document).on("click", idAddNewCheckboxButton, function(){
         add_checklist_string();
+        $(idAddNewCheckboxInput).focus();
     });
 
     //choosing checklist string
@@ -441,7 +443,7 @@ function load_json_data(response) {
 // response{'id', 'name', 'data'}
 function load_checklist_data(response) {
     let data;
-    $('#content_block').css({'min-height': '85vh',});
+    $(idContentBlock).css({'min-height': '85vh',});
     $(idChecklistContentBlock).empty();
     $(idChecklistContentBlock).append($('<p>', {id: idChecklistPathLabel.slice(1)})
                                     .append(path_start + $(classParentDirectoryLabel).text()));
