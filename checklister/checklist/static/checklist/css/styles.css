@@ -26,6 +26,16 @@
     margin-top: 1rem;
 }
 
+.index_content{
+    background: url(../img/background.png), rgba(255,255,255,0.3);
+    background-blend-mode: color;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-origin: content-box;
+    background-size: contain;
+    min-height: 85vh;
+}
+
 .child {
 /*    border: 2px solid black;
     border-radius: 5px;*/
@@ -104,10 +114,60 @@
     justify-self: flex-end;
 }
 
+.flex_vertical {
+    display: flex;
+    min-height: 85vh;
+    flex-flow: column nowrap;
+    justify-content: center;
+    box-sizing: content-box;
+}
+
+.flex_start {
+    align-self: flex-start;
+}
+
+.flex_center {
+    align-self: center;
+}
+
+.flex_end {
+    align-self: flex-end;
+}
+
 img.flex_end_item   {
     width: 20px;
     height: 20px;
     margin: 5px;
+}
+
+.text_left {
+    text-align: left;
+    padding-left: 15vw;
+}
+
+.text_center {
+    text-align: center;
+    padding: 0 15vw;
+}
+
+.text_right {
+    text-align: right;
+    padding-right: 15vw;
+}
+
+.tagline {
+    font-size: 60pt;
+    line-height: 25vh;
+    font-weight: 700;
+    /*color: #25cd25;*/
+    color: #2472ff;
+    font-style: italic;
+}
+
+.footer-text {
+    font-weight: 600;
+    color: #2472ff;
+    font-style: italic;
 }
 
 #directory_list, #checklist_list {
