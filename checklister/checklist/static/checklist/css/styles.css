@@ -122,18 +122,6 @@
     box-sizing: content-box;
 }
 
-.flex_start {
-    align-self: flex-start;
-}
-
-.flex_center {
-    align-self: center;
-}
-
-.flex_end {
-    align-self: flex-end;
-}
-
 img.flex_end_item   {
     width: 20px;
     height: 20px;
@@ -348,6 +336,7 @@ img.flex_end_item   {
     box-sizing: border-box;
     max-width: 450px;
     align-self: center;
+    min-height: 80vh;
 }
 
 #content_block {
@@ -361,6 +350,20 @@ img.flex_end_item   {
 
 #checklist_data {
     min-height: 208px;
+}
+
+.text_left, .text_center, .text_right {
+    text-align: center;
+    padding: 0;
+}
+
+.tagline {
+    font-size: 40pt;
+    line-height: 25vh;
+    font-weight: 700;
+    /*color: #25cd25;*/
+    color: #2472ff;
+    font-style: italic;
 }
 
 
