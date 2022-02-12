@@ -431,8 +431,7 @@ function load_json_data(response) {
                                 .append($('<div>', {class: classChecklistLabel.slice(1),
                                                     addClass: classFlexItem,
                                                     value: response['checklists'][key]['id']})
-                                    .append($('<a>', {href: idChecklistContentBlock})
-                                                      .append(response['checklists'][key]['name'])))
+                                    .append(response['checklists'][key]['name']))
                                 .append($('<img>', {class: classFlexEndItem,
                                                     addClass: classContextMenuIcon.slice(1),
                                                     src: menu_image})));
@@ -478,6 +477,7 @@ function load_checklist_data(response) {
     $(idCheckboxEditorBlock).addClass(classHideElement.slice(1));
     $(idAddNewCheckboxBlock).removeClass(classHideElement.slice(1));
     loaded_checklist = $(idChecklistContentBlock)[0].innerHTML;
+    $('html, body').stop().animate({scrollTop: $(idChecklistContentBlock).offset().top}, 800);
 };
 
 //actions after successful saving checklist

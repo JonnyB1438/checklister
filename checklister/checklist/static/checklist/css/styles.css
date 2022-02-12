@@ -3,19 +3,6 @@
     min-height: 100vh;
 }
 
-.checklist_name > a {
-    color: #0066ff;
-}
-
-.checklist_name > a:hover {
-    text-decoration: none;
-    color: #0066ff;
-}
-
-.checklist_name > a:visited {
-    color: #0066ff;
-}
-
 .h2check {
     font-size: 1.5rem;
     text-align: center;
@@ -165,6 +152,7 @@ img.flex_end_item   {
 .checklist_name {
     padding-left: 10px;
     word-break: break-word;
+    color: #0066ff;
 }
 
 .checklist:hover {

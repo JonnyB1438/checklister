@@ -36,9 +36,7 @@
             {% if content.checklists %}
                 {% for checklist in content.checklists.values %}
                     <div class="checklist flex_container">
-                        <div class="checklist_name flex_item" value="{{ checklist.id }}">
-                            <a href="#content">{{ checklist.name }}</a>
-                        </div>
+                        <div class="checklist_name flex_item" value="{{ checklist.id }}">{{ checklist.name }}</div>
                         <img class="menu_img flex_end_item" src="{% static 'checklist/img/menu.png' %}">
                     </div>
                 {% endfor %}
