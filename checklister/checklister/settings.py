@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-fw5_h*j#(izn2dxmu#uwi^dv1*+m4=*ahpw7rdc_5vn-oq(ppw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = variables.DEBUG
 
 ALLOWED_HOSTS = ['checklister.site',
                  '127.0.0.1',
