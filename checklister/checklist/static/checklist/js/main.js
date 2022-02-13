@@ -313,9 +313,9 @@ function end_editing(id, status=true) {
         let input = $('#'+id);
         let label = input.prev();
         if (status && input.val() && (input.val() != label.text())) {
-            label.children('a').text(input.val());
+            label.text(input.val());
             let checklist_id = label.attr('value');
-            save_checklist(checklist_id, label.children('a').text(), "");
+            save_checklist(checklist_id, label.text(), "");
             if (checklist_id == $(classH2Header, idChecklistContentBlock).attr('value')) {
                 $(classH2Header, idChecklistContentBlock).text(label.text());
             };
@@ -572,7 +572,7 @@ function edit_checklist_name(checklist_id) {
         let editor = $('<input/>', { id: idChecklistEditorInput.slice(1),
                                   class: classFlexItem,
                                   addClass: classElementEditor.slice(1)})
-            .val(element.children('a').text());
+            .val(element.text());
         $(element).after(editor);
         editor.select();
 };
