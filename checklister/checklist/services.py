@@ -276,22 +276,27 @@ def get_handler(request):
     :return: JSON(ajax) response.
     """
     # Enter into the directory
-    if 'directory_id' in request.GET and request.GET['directory_id'].isdigit():
-        json_response = get_json_directory_content(owner=request.user, directory_id=int(request.GET['directory_id']))
-        return JsonResponse(json_response, status=200)
-    # Enter into the parent directory
-    elif 'parent_id' in request.GET and request.GET['parent_id'].isdigit():
-        directory_id = int(request.GET['parent_id'])
-        directory = get_directory(owner=request.user, directory_id=directory_id)
-        if directory and directory['parent']:
-            directory_id = directory['parent']
-        json_response = get_json_directory_content(owner=request.user, directory_id=directory_id)
-        return JsonResponse(json_response, status=200)
-    elif 'checklist_id' in request.GET and request.GET['checklist_id'].isdigit():
-        json_response = get_existed_checklist_by_owner(checklist_id=int(request.GET['checklist_id']),
-                                                       owner=request.user)
-        return JsonResponse(json_response, status=200)
-    return JsonResponse({'error': 'Error'}, status=500)
+    try:
+        if 'directory_id' in request.GET and request.GET['directory_id'].isdigit():
+            json_response = get_json_directory_content(owner=request.user,
+                                                       directory_id=int(request.GET['directory_id']))
+            return JsonResponse(json_response, status=200)
+        # Enter into the parent directory
+        elif 'parent_id' in request.GET and request.GET['parent_id'].isdigit():
+            directory_id = int(request.GET['parent_id'])
+            directory = get_directory(owner=request.user, directory_id=directory_id)
+            if directory and directory['parent']:
+                directory_id = directory['parent']
+            json_response = get_json_directory_content(owner=request.user, directory_id=directory_id)
+            return JsonResponse(json_response, status=200)
+        elif 'checklist_id' in request.GET and request.GET['checklist_id'].isdigit():
+            json_response = get_existed_checklist_by_owner(checklist_id=int(request.GET['checklist_id']),
+                                                           owner=request.user)
+            if json_response:
+                return JsonResponse(json_response, status=200)
+        return JsonResponse({'error': 'Error of parameters'}, status=500)
+    except Exception as e:
+        return JsonResponse({'error': e}, status=500)
 
 
 def post_handler(request):
@@ -302,73 +307,76 @@ def post_handler(request):
     :return: JSON(ajax) response.
     """
     # creation a new directory into the current directory
-    if 'new_directory_name' in request.POST and 'current_directory_id' in request.POST \
-            and request.POST['current_directory_id'].isdigit():
-        parent_directory_id = int(request.POST['current_directory_id'])
-        if parent_directory_id == 0 or get_directory(request.user, directory_id=parent_directory_id):
-            add_new_directory(new_directory_name=request.POST['new_directory_name'],
-                              parent_id=parent_directory_id,
-                              owner=request.user)
-            json_response = get_json_directory_content(owner=request.user, directory_id=parent_directory_id)
-            return JsonResponse(json_response, status=200)
-    # creation a new checklist into the current directory
-    elif 'new_checklist_name' in request.POST and 'current_directory_id' in request.POST \
-            and request.POST['current_directory_id'].isdigit():
-        parent_directory_id = int(request.POST['current_directory_id'])
-        if parent_directory_id == 0 or get_directory(request.user, directory_id=parent_directory_id):
-            add_new_checklist(new_checklist_name=request.POST['new_checklist_name'],
-                              parent_id=parent_directory_id,
-                              owner=request.user)
-            json_response = get_json_directory_content(owner=request.user, directory_id=parent_directory_id)
-            return JsonResponse(json_response, status=200)
-    # deletion the directory
-    elif 'delete_directory_id' in request.POST and request.POST['delete_directory_id'].isdigit():
-        delete_directory_by_owner(directory_id=request.POST['delete_directory_id'], owner=request.user)
-        return JsonResponse({'status': 'Success'}, status=200)
-    # deletion the checklist
-    elif 'delete_checklist_id' in request.POST and request.POST['delete_checklist_id'].isdigit():
-        delete_existed_checklist_by_owner(checklist_id=request.POST['delete_checklist_id'], owner=request.user)
-        return JsonResponse({'status': 'Success'}, status=200)
-    # update checklist information
-    elif 'updated_checklist_id' in request.POST and request.POST['updated_checklist_id'].isdigit():
-        if update_checklist_data(checklist_id=int(request.POST["updated_checklist_id"]),
-                                 owner=request.user,
-                                 name=request.POST["checklist_name"],
-                                 data=request.POST["checklist_data"]):
+    try:
+        if 'new_directory_name' in request.POST and 'current_directory_id' in request.POST \
+                and request.POST['current_directory_id'].isdigit():
+            parent_directory_id = int(request.POST['current_directory_id'])
+            if parent_directory_id == 0 or get_directory(request.user, directory_id=parent_directory_id):
+                add_new_directory(new_directory_name=request.POST['new_directory_name'],
+                                  parent_id=parent_directory_id,
+                                  owner=request.user)
+                json_response = get_json_directory_content(owner=request.user, directory_id=parent_directory_id)
+                return JsonResponse(json_response, status=200)
+        # creation a new checklist into the current directory
+        elif 'new_checklist_name' in request.POST and 'current_directory_id' in request.POST \
+                and request.POST['current_directory_id'].isdigit():
+            parent_directory_id = int(request.POST['current_directory_id'])
+            if parent_directory_id == 0 or get_directory(request.user, directory_id=parent_directory_id):
+                add_new_checklist(new_checklist_name=request.POST['new_checklist_name'],
+                                  parent_id=parent_directory_id,
+                                  owner=request.user)
+                json_response = get_json_directory_content(owner=request.user, directory_id=parent_directory_id)
+                return JsonResponse(json_response, status=200)
+        # deletion the directory
+        elif 'delete_directory_id' in request.POST and request.POST['delete_directory_id'].isdigit():
+            delete_directory_by_owner(directory_id=request.POST['delete_directory_id'], owner=request.user)
             return JsonResponse({'status': 'Success'}, status=200)
-    # update directory name
-    elif 'updated_directory_id' in request.POST and request.POST['updated_directory_id'].isdigit():
-        if update_directory_data(owner=request.user,
-                                 directory_id=int(request.POST["updated_directory_id"]),
-                                 directory_name=request.POST["directory_name"]):
+        # deletion the checklist
+        elif 'delete_checklist_id' in request.POST and request.POST['delete_checklist_id'].isdigit():
+            delete_existed_checklist_by_owner(checklist_id=request.POST['delete_checklist_id'], owner=request.user)
             return JsonResponse({'status': 'Success'}, status=200)
-    # move directory one level up
-    elif 'moving_directory_id' in request.POST and request.POST['moving_directory_id'].isdigit() \
-            and 'current_directory_id' in request.POST and request.POST['current_directory_id'].isdigit():
-        if move_directory_up_from_current_directory(owner=request.user,
-                                                    directory_id=int(request.POST["moving_directory_id"]),
-                                                    current_directory_id=int(request.POST["current_directory_id"])):
-            return JsonResponse({'status': 'Success'}, status=200)
-    # update a parent directory of a directory
-    elif 'moving_directory_id' in request.POST and request.POST['moving_directory_id'].isdigit() \
-            and 'target_directory_id' in request.POST and request.POST['target_directory_id'].isdigit():
-        if update_directory_data(owner=request.user,
-                                 directory_id=int(request.POST["moving_directory_id"]),
-                                 parent_directory_id=int(request.POST["target_directory_id"])):
-            return JsonResponse({'status': 'Success'}, status=200)
-    # move checklist one level up
-    elif 'moving_checklist_id' in request.POST and request.POST['moving_checklist_id'].isdigit() \
-            and 'current_directory_id' in request.POST and request.POST['current_directory_id'].isdigit():
-        if move_checklist_up_from_directory(owner=request.user,
-                                            checklist_id=int(request.POST["moving_checklist_id"]),
-                                            current_directory_id=int(request.POST["current_directory_id"])):
-            return JsonResponse({'status': 'Success'}, status=200)
-    # update a parent directory of a checklist
-    elif 'moving_checklist_id' in request.POST and request.POST['moving_checklist_id'].isdigit() \
-            and 'target_directory_id' in request.POST and request.POST['target_directory_id'].isdigit():
-        if move_checklist_into_directory(owner=request.user,
-                                         checklist_id=int(request.POST["moving_checklist_id"]),
-                                         target_directory_id=int(request.POST["target_directory_id"])):
-            return JsonResponse({'status': 'Success'}, status=200)
-    # return JsonResponse({'status': 'Success'}, status=200)
-    return JsonResponse({'error': 'Error'}, status=500)
+        # update checklist information
+        elif 'updated_checklist_id' in request.POST and request.POST['updated_checklist_id'].isdigit():
+            if update_checklist_data(checklist_id=int(request.POST["updated_checklist_id"]),
+                                     owner=request.user,
+                                     name=request.POST["checklist_name"],
+                                     data=request.POST["checklist_data"]):
+                return JsonResponse({'status': 'Success'}, status=200)
+        # update directory name
+        elif 'updated_directory_id' in request.POST and request.POST['updated_directory_id'].isdigit():
+            if update_directory_data(owner=request.user,
+                                     directory_id=int(request.POST["updated_directory_id"]),
+                                     directory_name=request.POST["directory_name"]):
+                return JsonResponse({'status': 'Success'}, status=200)
+        # move directory one level up
+        elif 'moving_directory_id' in request.POST and request.POST['moving_directory_id'].isdigit() \
+                and 'current_directory_id' in request.POST and request.POST['current_directory_id'].isdigit():
+            if move_directory_up_from_current_directory(owner=request.user,
+                                                        directory_id=int(request.POST["moving_directory_id"]),
+                                                        current_directory_id=int(request.POST["current_directory_id"])):
+                return JsonResponse({'status': 'Success'}, status=200)
+        # update a parent directory of a directory
+        elif 'moving_directory_id' in request.POST and request.POST['moving_directory_id'].isdigit() \
+                and 'target_directory_id' in request.POST and request.POST['target_directory_id'].isdigit():
+            if update_directory_data(owner=request.user,
+                                     directory_id=int(request.POST["moving_directory_id"]),
+                                     parent_directory_id=int(request.POST["target_directory_id"])):
+                return JsonResponse({'status': 'Success'}, status=200)
+        # move checklist one level up
+        elif 'moving_checklist_id' in request.POST and request.POST['moving_checklist_id'].isdigit() \
+                and 'current_directory_id' in request.POST and request.POST['current_directory_id'].isdigit():
+            if move_checklist_up_from_directory(owner=request.user,
+                                                checklist_id=int(request.POST["moving_checklist_id"]),
+                                                current_directory_id=int(request.POST["current_directory_id"])):
+                return JsonResponse({'status': 'Success'}, status=200)
+        # update a parent directory of a checklist
+        elif 'moving_checklist_id' in request.POST and request.POST['moving_checklist_id'].isdigit() \
+                and 'target_directory_id' in request.POST and request.POST['target_directory_id'].isdigit():
+            if move_checklist_into_directory(owner=request.user,
+                                             checklist_id=int(request.POST["moving_checklist_id"]),
+                                             target_directory_id=int(request.POST["target_directory_id"])):
+                return JsonResponse({'status': 'Success'}, status=200)
+        # return JsonResponse({'status': 'Success'}, status=200)
+        return JsonResponse({'error': 'Error of parameters'}, status=500)
+    except Exception as e:
+        return JsonResponse({'error': e}, status=500)
