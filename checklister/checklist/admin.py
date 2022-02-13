@@ -19,5 +19,5 @@ class CheckListTemplateAdmin(admin.ModelAdmin):
 
 
 # Register your models here.
-admin.site.register(Directory,DirectoryAdmin)
+admin.site.register(Directory, DirectoryAdmin)
 admin.site.register(CheckListTemplate, CheckListTemplateAdmin)

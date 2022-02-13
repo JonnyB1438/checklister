@@ -23,9 +23,7 @@ class AjaxHandlerView(View):
     def post(self, request):
         if request.user.is_authenticated:
             if request.is_ajax():
-                print('------------------AJAX------------------')
                 return post_handler(request=request)
             else:
                 return JsonResponse({'error': 'Error'}, status=500)
         return render(request, 'checklist/index.html')
-

@@ -1,7 +1,8 @@
 var menu_image = '/static/checklist/img/menu.png'
 var csrf;
 var loaded_checklist;
-var path_start = 'Path: ';
+//var path_start = 'Path: ';
+var path_start = '';
 
 var classMenuEditDirectoryName = 'edit_directory_name';
 var classMenuMoveDirectoryUp = 'move_directory_up';
@@ -130,6 +131,7 @@ $(document).ready(function () {
                 },
                 success: load_json_data,
                 error: function(response) {location.reload();},
+                async: false,
             });
         };
     });
@@ -149,6 +151,7 @@ $(document).ready(function () {
                 },
                 success: load_json_data,
                 error: function(response) {location.reload();},
+                async: false,
             });
         };
     });
@@ -381,6 +384,7 @@ function save_checklist(checklist_id, checklist_name, checklist_data) {
              csrfmiddlewaretoken: csrf,
         },
         error: function(response) {location.reload();},
+        async: false,
     });
 };
 
@@ -404,6 +408,7 @@ function save_directory_name(directory_id) {
              csrfmiddlewaretoken: csrf,
         },
         error: function(response) {location.reload();},
+        async: false,
     });
 };
 
@@ -515,6 +520,7 @@ function move_directory_up(directory_id, current_directory_id) {
                 };
             },
             error: function(response) {location.reload();},
+            async: false,
         });
 };
 
@@ -538,6 +544,7 @@ function move_directory_to(directory_id, target_directory_id) {
                 };
             },
             error: function(response) {location.reload();},
+            async: false,
         });
 };
 
@@ -562,6 +569,7 @@ function remove_directory(directory_id) {
                     };
                 },
                 error: function(response) {location.reload();},
+                async: false,
             });
         };
 };
@@ -596,6 +604,7 @@ function move_checklist_up(checklist_id, current_directory_id) {
             data: dict,
             success: element.fadeOut(),
             error: function(response) {location.reload();},
+            async: false,
         });
 };
 
@@ -615,6 +624,7 @@ function move_checklist_to(checklist_id, target_directory_id) {
             data: dict,
             success: element.fadeOut(),
             error: function(response) {location.reload();},
+            async: false,
         });
 };
 
@@ -637,6 +647,7 @@ function remove_checklist(checklist_id) {
                 };
             },
             error: function(response) {location.reload();},
+            async: false,
         });
         };
 };
