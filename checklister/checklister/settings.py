@@ -28,7 +28,7 @@ DEBUG = variables.DEBUG
 ALLOWED_HOSTS = ['checklister.site',
                  '127.0.0.1',
                  'localhost',
-]
+                 ]
 
 # Application definition
 
@@ -147,9 +147,9 @@ LOGOUT_REDIRECT_URL = "checklist"
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',     #google auth
-    'social_core.backends.vk.VKOAuth2',             #vk auth
-    'django.contrib.auth.backends.ModelBackend',    #clasic auth
+    'social_core.backends.google.GoogleOAuth2',  # google auth
+    'social_core.backends.vk.VKOAuth2',  # vk auth
+    'django.contrib.auth.backends.ModelBackend',  # clasic auth
 )
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/checklist/'
