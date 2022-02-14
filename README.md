@@ -1,6 +1,6 @@
 # checklister
 
-A Django service for managment of your checklists.
+A Django app of your checklist management.
 
 # Dependencies
 
