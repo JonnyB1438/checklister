@@ -283,6 +283,7 @@ img.flex_end_item   {
     margin: 3px 3px 3px 4px;
     width: 13px;
     height: 13px;
+    flex-shrink: 0;
 }
 .checkbox_label {
     cursor: pointer;
