@@ -7,14 +7,15 @@ class Directory(models.Model):
     """
     This model stores a structure of directory, where:
         - parent is a parent directory id
-        - owner is an user id from AUTH_USER_MODEL
+        - owner is a user id from AUTH_USER_MODEL
     """
     name = models.CharField(max_length=255, verbose_name='Directory name')
-    parent = models.IntegerField(default=0, verbose_name='Parent directory')
+    parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE, verbose_name='Parent directory')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='User')
 
     class Meta:
-        ordering = ['owner', 'parent', 'name']
+        # ordering = ['owner', 'parent', 'name']
+        ordering = ['owner', 'name']
         verbose_name = 'Directory'
         verbose_name_plural = 'Directories'
 

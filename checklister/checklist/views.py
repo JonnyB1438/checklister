@@ -9,7 +9,6 @@ class AjaxHandlerView(View):
     #     The main view class of application checks an auth and type of request and sends it to the appropriate handler:
     #     a built-in template engine or an ajax handler(GET or POST).
     #     """
-
     def get(self, request):
         if request.user.is_authenticated:
             if request.is_ajax():
