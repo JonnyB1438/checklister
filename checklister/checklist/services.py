@@ -1,5 +1,3 @@
-# import urllib.request
-
 import django.contrib.auth.models
 from django.http.response import JsonResponse
 from requests import Request
@@ -266,7 +264,7 @@ def delete_directory_by_owner(directory_id: int, owner: User) -> bool:
 
 def get_handler(request: Request):
     """
-    Finds known request GET params and processes them.
+    Finds known request GET params and handles them.
 
     :param request: JSON(ajax) request from front-end.
     :return: JSON(ajax) response.
@@ -285,6 +283,7 @@ def get_handler(request: Request):
                 directory_id = directory['parent']
             json_response = get_json_directory_content(owner=request.user, directory_id=directory_id)
             return JsonResponse(json_response, status=200)
+        # Show checklist
         elif 'checklist_id' in request.GET and request.GET['checklist_id'].isdigit():
             json_response = get_existed_checklist_by_owner(checklist_id=int(request.GET['checklist_id']),
                                                            owner=request.user)
@@ -297,7 +296,7 @@ def get_handler(request: Request):
 
 def post_handler(request):
     """
-    Finds known request POST params and processes them.
+    Finds known request POST params and handles them.
 
     :param request: JSON(ajax) request from front-end.
     :return: JSON(ajax) response.
