@@ -5,7 +5,7 @@
         <a class="p-2 text-dark" href="{% url 'profile' %}">
             {% if user.first_name %}
                 <b>{{ user.first_name }}</b></a>
-            {% else %}}
+            {% else %}
                 <b>{{ user.username }}</b></a>
             {% endif %}
         <a class="p-2 text-dark" href="{% url 'logout' %}">Log out</a>
