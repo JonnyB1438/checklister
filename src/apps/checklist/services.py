@@ -173,9 +173,14 @@ def add_new_directory(new_directory_name: str, parent_directory_id: int | None, 
     :param owner: a user of an auth user type.
     :return: a dict with keys: 'id', 'name' of a new directory.
     """
-    new_directory = Directory(name=new_directory_name,
-                              parent=Directory.objects.get(id=parent_directory_id),
-                              owner=owner)
+    if parent_directory_id:
+        new_directory = Directory(name=new_directory_name,
+                                  parent=Directory.objects.get(id=parent_directory_id),
+                                  owner=owner)
+    else:
+        new_directory = Directory(name=new_directory_name,
+                                  parent=None,
+                                  owner=owner)
     new_directory.save()
     return {'id': new_directory.pk, 'name': new_directory.name}
 

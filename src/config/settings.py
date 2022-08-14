@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
             ],
@@ -145,13 +146,17 @@ LOGOUT_REDIRECT_URL = "checklist"
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 
-SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',  # google auth
+SOCIAL_AUTH_VK_OAUTH2_KEY = variables.SOCIAL_AUTH_VK_OAUTH2_KEY
+SOCIAL_AUTH_VK_OAUTH2_SECRET = variables.SOCIAL_AUTH_VK_OAUTH2_SECRET
+# SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email', ]
+
+AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',  # vk auth
+    'social_core.backends.google.GoogleOAuth2',  # google auth
     'django.contrib.auth.backends.ModelBackend',  # clasic auth
 )
 
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/checklist/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
