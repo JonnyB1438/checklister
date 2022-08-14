@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import os
 from os import path
 from pathlib import Path
 from . import variables
@@ -35,8 +34,8 @@ ALLOWED_HOSTS = ['checklister.site',
 
 INSTALLED_APPS = [
     # 'checklist.app.ChecklistConfig'
-    'checklist',
-    'users',
+    'apps.checklist',
+    'apps.users',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_django',
-
 ]
 
 MIDDLEWARE = [
@@ -60,7 +58,7 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
-ROOT_URLCONF = 'checklister.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -80,7 +78,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'checklister.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
