@@ -14,7 +14,7 @@ class Directory(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='User')
 
     class Meta:
-        # ordering = ['owner', 'parent', 'name']
+        default_related_name = 'directories'
         ordering = ['owner', 'name']
         verbose_name = 'Directory'
         verbose_name_plural = 'Directories'
@@ -31,6 +31,7 @@ class CheckListTemplate(models.Model):
     directory = models.ForeignKey('Directory', on_delete=models.CASCADE, verbose_name='Parent directory')
 
     class Meta:
+        default_related_name = 'checklists'
         ordering = ['directory', 'name', ]
         verbose_name = 'CheckList Template'
         verbose_name_plural = 'CheckList Templates'

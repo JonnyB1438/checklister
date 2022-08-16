@@ -24,17 +24,21 @@ SECRET_KEY = 'django-insecure-fw5_h*j#(izn2dxmu#uwi^dv1*+m4=*ahpw7rdc_5vn-oq(ppw
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = variables.DEBUG
+if DEBUG:
+    import mimetypes
+    mimetypes.add_type("application/javascript", ".js", True)
 
 ALLOWED_HOSTS = ['checklister.site',
                  '127.0.0.1',
                  'localhost',
                  ]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
 # Application definition
 INSTALLED_APPS = [
-    'apps.checklist',
-    'apps.users',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +47,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'social_django',
+    'debug_toolbar',
+    'apps.checklist',
+    'apps.users',
+
 ]
 
 MIDDLEWARE = [
@@ -55,6 +63,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

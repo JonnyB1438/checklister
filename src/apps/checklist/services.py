@@ -1,36 +1,32 @@
-import django.contrib.auth.models
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http.response import JsonResponse
 from requests import Request
+from django.contrib.auth.models import User
 
 from .models import Directory, CheckListTemplate
-
-User = django.contrib.auth.models.User
 
 
 def get_directory(owner: User, directory_id: int) -> dict:
     """
     Performs a secure existence check of a directory by an owner (using filter method).
-
     :param owner: a user of an auth user type.
     :param directory_id: a checking directory id.
     :return: An empty dictionary or a dictionary with keys 'id', 'name' and 'parent' of founded directory.
     """
     try:
-        directory = Directory.objects.get(owner=owner, id=directory_id)
-        if directory.parent:
-            return {'id': directory.id, 'name': directory.name, 'parent': directory.parent.id}
-        else:
-            return {'id': directory.id, 'name': directory.name, 'parent': directory.parent}
+        directory = Directory.objects.select_related('parent').get(owner=owner, id=directory_id)
     except ObjectDoesNotExist:
         return {}
+    if directory.parent:
+        return {'id': directory.id, 'name': directory.name, 'parent': directory.parent.id}
+    else:
+        return {'id': directory.id, 'name': directory.name, 'parent': directory.parent}
 
 
 def get_root_directory(owner: User) -> dict:
     """
     Check an auth user root directory, if it does not exist, create it.
     Return a dict with keys: 'id', 'name' of the root directory.
-
     :param owner: a user of an auth user type.
     :return: a dict with keys: 'id', 'name' of the root directory.
     """
@@ -40,24 +36,12 @@ def get_root_directory(owner: User) -> dict:
     except ObjectDoesNotExist:
         return add_new_directory(new_directory_name='/', parent_directory_id=None, owner=owner)
     except MultipleObjectsReturned:
-        return Directory.objects.fileter(owner=owner, parent__isnull=True).values('id', 'name')[0]
-
-
-def get_checklists_by_directory(owner: User, directory_id: int) -> list[Directory]:
-    """
-    Return a list of checklists in an owner directory as dictionaries with keys: 'id', 'name'.
-
-    :param owner: a user of an auth user type.
-    :param directory_id: a search directory id.
-    :return: a list of dictionaries with keys: 'id', 'name'.
-    """
-    return CheckListTemplate.objects.filter(directory__id=directory_id, directory__owner=owner).values('id', 'name')
+        return Directory.objects.filter(owner=owner, parent__isnull=True).values('id', 'name').first()
 
 
 def update_directory_data(owner: User, directory_id: int, directory_name=None, parent_directory_id=None) -> bool:
     """
     Change a directory(name, parent) with checking of an owner(directory and parent).
-
     :param owner: a user of an auth user type.
     :param directory_id: a changing directory ID.
     :param parent_directory_id: a new parent directory ID.
@@ -84,7 +68,6 @@ def update_directory_data(owner: User, directory_id: int, directory_name=None, p
 def move_directory_up_from_current_directory(owner: User, directory_id: int, current_directory_id: int) -> bool:
     """
     Move a directory up from a current directory with checking of their owner.
-
     :param owner: a user of an auth user type.
     :param directory_id: a moving directory ID.
     :param current_directory_id: a current directory ID.
@@ -100,38 +83,30 @@ def move_directory_up_from_current_directory(owner: User, directory_id: int, cur
 def move_checklist_into_directory(owner: User, checklist_id: int, target_directory_id: int) -> bool:
     """
     Move a checklist to another directory with checking of their owner.
-
     :param owner: a user of an auth user type.
     :param checklist_id: a moving checklist ID.
     :param target_directory_id: a target directory ID.
     :return: True if everything is OK, else - False
     """
     try:
-        checklist = CheckListTemplate.objects.get(id=checklist_id, directory__owner=owner)
         target_directory = Directory.objects.get(id=target_directory_id, owner=owner)
     except ObjectDoesNotExist:
         return False
-    checklist.directory = target_directory
-    checklist.save()
-    return True
+    return CheckListTemplate.objects.filter(id=checklist_id, directory__owner=owner).update(directory=target_directory)
 
 
 def move_checklist_up_from_directory(owner: User, checklist_id: int, current_directory_id: int) -> bool:
     """
     Move a checklist up from a current directory with checking of their owner.
-
     :param owner: a user of an auth user type.
     :param checklist_id: a moving checklist ID.
     :param current_directory_id: a current directory ID.
     :return: True if everything is OK, else - False
     """
     try:
-        target_directory = Directory.objects.get(id=current_directory_id, owner=owner).parent
-        if target_directory:
-            target_directory_id = target_directory.id
-        else:
-            return False
-    except ObjectDoesNotExist:
+        target_directory_id = Directory.objects.select_related('parent').\
+            get(id=current_directory_id, owner=owner).parent.id
+    except ObjectDoesNotExist or AttributeError:
         return False
     return move_checklist_into_directory(owner=owner,
                                          checklist_id=checklist_id,
@@ -141,7 +116,6 @@ def move_checklist_up_from_directory(owner: User, checklist_id: int, current_dir
 def get_directory_path(owner: User, directory_id: int) -> str:
     """
     Return a full path of a directory with separators - '/'.
-
     :param owner: a user of an auth user type.
     :param directory_id: a directory id.
     :return: full a full path of a directory.
@@ -169,7 +143,6 @@ def get_json_directory_content(owner: User, directory_id: int):
         where elements are child directory dicts with an ID('id') and a name ('name');
     'checklists' - consists of a numbered dict,
         where elements are child checklist dicts with an ID('id') and a name ('name');
-
     :param owner: a user of an auth user type.
     :param directory_id: a directory id.
     :return: dict with keys: 'parent_directory'('id', 'path'), 'directories', 'checklists'.
@@ -178,7 +151,7 @@ def get_json_directory_content(owner: User, directory_id: int):
     parent_directory = {'id': directory_id, 'name': parent_directory_path}
     directory_list = Directory.objects.filter(owner=owner, parent=directory_id).values('id', 'name')
     directory_dict = {index: directory for index, directory in enumerate(directory_list)}
-    checklist_list = get_checklists_by_directory(owner=owner, directory_id=directory_id)
+    checklist_list = CheckListTemplate.objects.filter(directory=directory_id, directory__owner=owner).values('id', 'name')
     checklist_dict = {index: checklist for index, checklist in enumerate(checklist_list)}
     return {'parent_directory': parent_directory, 'directories': directory_dict, 'checklists': checklist_dict}
 
@@ -186,7 +159,6 @@ def get_json_directory_content(owner: User, directory_id: int):
 def add_new_directory(new_directory_name: str, parent_directory_id: int | None, owner: User) -> dict:
     """
     Add a new directory into a checked parent directory of current user.
-
     :param new_directory_name: a name of a new directory.
     :param parent_directory_id: an ID of a parent directory.
     :param owner: a user of an auth user type.
@@ -207,7 +179,6 @@ def add_new_directory(new_directory_name: str, parent_directory_id: int | None, 
 def add_new_checklist(new_checklist_name: str, parent_id: int, owner: User):
     """
     Add a new checklist into a checked parent directory of current user.
-
     :param new_checklist_name: a name of a new checklist.
     :param parent_id: an ID of a parent directory.
     :param owner: a user of an auth user type.
@@ -225,7 +196,6 @@ def add_new_checklist(new_checklist_name: str, parent_id: int, owner: User):
 def get_checklist_data_by_owner(checklist_id: int, owner: User) -> dict:
     """
     Get a checklist after checking it belongs to an owner.
-
     :param checklist_id: an ID of a checklist.
     :param owner: a user of an auth user type.
     :return: a dict with keys: 'id', 'name', 'data'.
@@ -240,7 +210,6 @@ def get_checklist_data_by_owner(checklist_id: int, owner: User) -> dict:
 def update_checklist_data(checklist_id: int, owner: User, name=None, data=None):
     """
     Update a checklist after checking it belongs to an owner.
-
     :param checklist_id: an ID of a checklist.
     :param owner: a user of an auth user type.
     :param name: if it is set, replaces checklist 'name'
@@ -262,7 +231,6 @@ def update_checklist_data(checklist_id: int, owner: User, name=None, data=None):
 def delete_checklist_by_owner(checklist_id: int, owner: User) -> bool:
     """
     Delete a checklist after checking it belongs to an owner.
-
     :param checklist_id: an ID of a deleting checklist.
     :param owner: a user of an auth user type.
     :return: True, if a checklist was found and deleted, False if not.
@@ -277,7 +245,6 @@ def delete_checklist_by_owner(checklist_id: int, owner: User) -> bool:
 def delete_directory_by_owner(directory_id: int, owner: User) -> bool:
     """
     Delete a directory after checking it belongs to an owner using a recursive function.
-
     :param directory_id: an ID of a deleting directory.
     :param owner: a user of an auth user type.
     :return: True, if the directory was found and deleted, False if not.
@@ -292,7 +259,6 @@ def delete_directory_by_owner(directory_id: int, owner: User) -> bool:
 def get_handler(request: Request):
     """
     Finds known request GET params and handles them.
-
     :param request: JSON(ajax) request from front-end.
     :return: JSON(ajax) response.
     """
