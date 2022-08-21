@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import os
 from os import path
 from pathlib import Path
 from . import variables
@@ -46,10 +47,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'oauth2_provider',
     'social_django',
     'debug_toolbar',
     'apps.checklist',
     'apps.users',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_social_oauth2',
+    'djoser',
 
 ]
 
@@ -178,6 +184,7 @@ SOCIAL_AUTH_PIPELINE = (
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',  # vk auth
     'social_core.backends.google.GoogleOAuth2',  # google auth
+    # 'rest_framework_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',  # clasic auth
 )
 
@@ -194,3 +201,27 @@ EMAIL_HOST_PASSWORD = variables.EMAIL_HOST_PASSWORD
 DEFAULT_FROM_EMAIL = variables.DEFAULT_FROM_EMAIL
 
 SERVER_EMAIL = EMAIL_HOST_USER
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+if DEBUG:
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SERIALIZERS': {},
+}
