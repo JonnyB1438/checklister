@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import os
 from os import path
 from pathlib import Path
 from . import variables
@@ -24,26 +25,37 @@ SECRET_KEY = 'django-insecure-fw5_h*j#(izn2dxmu#uwi^dv1*+m4=*ahpw7rdc_5vn-oq(ppw
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = variables.DEBUG
+if DEBUG:
+    import mimetypes
+    mimetypes.add_type("application/javascript", ".js", True)
 
 ALLOWED_HOSTS = ['checklister.site',
                  '127.0.0.1',
                  'localhost',
                  ]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
 # Application definition
-
 INSTALLED_APPS = [
-    # 'checklist.app.ChecklistConfig'
-    'checklist',
-    'users',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'oauth2_provider',
     'social_django',
+    'debug_toolbar',
+    'apps.checklist',
+    'apps.users',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_social_oauth2',
+    'djoser',
 
 ]
 
@@ -57,9 +69,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-ROOT_URLCONF = 'checklister.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -72,6 +85,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
             ],
@@ -79,7 +93,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'checklister.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -138,6 +152,7 @@ STATICFILES_DIR = []
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
+# AUTH_USER_MODEL = 'users.CustomUser'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = "/auth/login/"
@@ -146,13 +161,34 @@ LOGOUT_REDIRECT_URL = "checklist"
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 
-SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',  # google auth
+SOCIAL_AUTH_VK_OAUTH2_KEY = variables.SOCIAL_AUTH_VK_OAUTH2_KEY
+SOCIAL_AUTH_VK_OAUTH2_SECRET = variables.SOCIAL_AUTH_VK_OAUTH2_SECRET
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = variables.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = variables.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
+
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email', ]
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
+AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',  # vk auth
+    'social_core.backends.google.GoogleOAuth2',  # google auth
+    # 'rest_framework_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',  # clasic auth
 )
 
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/checklist/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -165,3 +201,27 @@ EMAIL_HOST_PASSWORD = variables.EMAIL_HOST_PASSWORD
 DEFAULT_FROM_EMAIL = variables.DEFAULT_FROM_EMAIL
 
 SERVER_EMAIL = EMAIL_HOST_USER
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+if DEBUG:
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SERIALIZERS': {},
+}
