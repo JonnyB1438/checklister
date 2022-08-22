@@ -12,7 +12,7 @@ urlpatterns = [
     path('api/v1/checklist/<int:pk>/', ChecklistRUDAPIView.as_view()),
 
     path('api/v1/dirs/<int:parent_id>/', DirectoryListAPIView.as_view()),
-    path('api/v1/dir/<int:pk>/', DirectoryRUDAPIView.as_view()),
+    path('api/v1/dir/<int:pk>/', DirectoryRUDAPIView.as_view(), name='dir_data'),
 
     path('api/v1/structure/', DirectoryAPIView.as_view()),
 ]
