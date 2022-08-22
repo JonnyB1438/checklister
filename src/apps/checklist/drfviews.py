@@ -31,17 +31,11 @@ class ChecklistRUDAPIView(RetrieveUpdateDestroyAPIView):
         return CheckListTemplate.objects.filter(pk=self.kwargs.get('pk'),
                                                 directory__owner=self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        if not get_directory(directory_id=int(self.request.POST.get('directory')), owner=self.request.user):
+    def perform_update(self, serializer):
+        if serializer.validated_data['directory'].owner != self.request.user:
             raise PermissionDenied(detail=None, code=None)
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        if getattr(instance, '_prefetched_objects_cache', None):
-            instance._prefetched_objects_cache = {}
-        return Response(serializer.data)
+        print(serializer.validated_data)
+        serializer.save()
 
 
 class DirectoryListAPIView(ListCreateAPIView):
@@ -69,17 +63,10 @@ class DirectoryRUDAPIView(RetrieveUpdateDestroyAPIView):
             .prefetch_related('checklists')\
             .prefetch_related('directories')
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        if not get_directory(directory_id=int(self.request.POST.get('parent')), owner=self.request.user):
+    def perform_update(self, serializer):
+        if serializer.validated_data['parent'].owner != self.request.user:
             raise PermissionDenied(detail=None, code=None)
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        if getattr(instance, '_prefetched_objects_cache', None):
-            instance._prefetched_objects_cache = {}
-        return Response(serializer.data)
+        serializer.save()
 
 
 class DirectoryAPIView(GenericAPIView):
