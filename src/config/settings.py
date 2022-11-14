@@ -30,6 +30,7 @@ if DEBUG:
     mimetypes.add_type("application/javascript", ".js", True)
 
 ALLOWED_HOSTS = ['checklister.site',
+                 'checklister.jb1438.ru',
                  '127.0.0.1',
                  'localhost',
                  ]
