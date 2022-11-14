@@ -1,3 +1,4 @@
+from django.db.models import Prefetch
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
 from rest_framework.response import Response
@@ -59,9 +60,8 @@ class DirectoryRUDAPIView(RetrieveUpdateDestroyAPIView):
     # permission_classes = (IsOwner, )
 
     def get_queryset(self):
-        return Directory.objects.filter(owner=self.request.user, pk=self.kwargs.get('pk'))\
-            .prefetch_related('checklists')\
-            .prefetch_related('directories')
+        return Directory.objects.filter(owner=self.request.user, pk=self.kwargs.get('pk')
+                                        ).prefetch_related('checklists').prefetch_related('directories')
 
     def perform_update(self, serializer):
         if serializer.validated_data['parent'].owner != self.request.user:
@@ -74,9 +74,10 @@ class DirectoryAPIView(GenericAPIView):
     serializer_class = DirectoryStructureSerializer
 
     def get(self, request, *args, **kwargs):
-        queryset = Directory.objects\
-            .prefetch_related('directories')\
-            .prefetch_related('checklists')\
-            .get(parent=None, owner=self.request.user)
+        queryset = Directory.objects.prefetch_related(
+            'directories'
+        ).prefetch_related(
+            'checklists'
+        ).get(parent=None, owner=self.request.user)
         serializer = self.get_serializer(queryset)
         return Response(serializer.data)
